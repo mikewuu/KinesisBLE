@@ -4,7 +4,7 @@
 #include "keymap.h"
 #include "bluetooth.h"
 
-#define BLUETOOTH_RESET true
+#define BLUETOOTH_RESET false
 
 #define VBAT 9
 #define LED 13

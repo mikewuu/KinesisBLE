@@ -31,7 +31,9 @@ void send_report_keyboard() {
     active_mods, report[0], report[1], report[2], report[3], report[4], report[5]
   );
   ble.println(payload);
-  delay(5);
+  if (!ble.waitForOK()) {
+    send_report_keyboard();
+  }
 }
 
 void register_keydown(uint16_t keycode) {
