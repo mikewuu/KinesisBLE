@@ -74,7 +74,7 @@ void init_bluetooth(bool reset) {
     ble.factoryReset();
     ble.setMode(BLUEFRUIT_MODE_COMMAND);
     ble.println("AT+GATTCLEAR");
-    ble.println("AT+GAPDEVNAME=The Blanck Keyboard");
+    ble.println("AT+GAPDEVNAME=The Blanck Keyboard.");
 
     // Add battery service
     ble.println("AT+GATTADDSERVICE=UUID=0x180F");

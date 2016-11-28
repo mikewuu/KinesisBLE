@@ -14,8 +14,8 @@
 
 #define DEBOUNCING_DELAY 5
 
-uint8_t col_pins[COLS] = { 11, 10, 6, 5, 3, 2 };
-uint8_t row_pins[ROWS] = { 1, 0, 23, 22, 20, 21, 18, 19 };
+uint8_t col_pins[COLS] = { 11, 10, 5, 6, 3, 2 };
+uint8_t row_pins[ROWS] = { 0, 1, 23, 22, 20, 21, 18, 19 };
 
 uint8_t prev_states[ROWS] = { 0 };
 uint8_t curr_states[ROWS] = { 0 };
@@ -51,7 +51,7 @@ void loop(void) {
   if (!is_bluetooth_connected()) {
     last_reported = 999;
     last_report_time = 0;
-    analogWrite(LED, 64);
+    analogWrite(LED, 32);
     delay(500);
     return;
   }
