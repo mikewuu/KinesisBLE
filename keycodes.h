@@ -83,7 +83,7 @@
 #define K_CMD  0x0800
 #define K_HYPR (K_CTRL | K_SHFT | K_OPT | K_CMD)
 
-#define K_MUTE K_F12
+#define K_MUTE K_F10
 #define K_VOLU K_F12
 #define K_VOLD K_F11
 #define K_PREV K_F7
