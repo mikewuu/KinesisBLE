@@ -31,6 +31,12 @@ uint8_t pressed_alone = 0;
 #define PRESSED_HOME 4
 
 
+uint16_t layers_cache[4][12] = {
+  {______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______},
+  {______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______},
+  {______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______},
+  {______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______}
+};
 const uint16_t PROGMEM layers[LAYERS][4][12] = {
   [BASE] = {
     {K_ESC,  K_A,    K_Z,    K_E,    K_R,    K_T,    K_Y,    K_U,    K_I,    K_O,    K_P,    K_BSPC},
@@ -62,6 +68,11 @@ const uint16_t PROGMEM layers[LAYERS][4][12] = {
 
 
 uint16_t get_keycode_at(uint8_t row, uint8_t col) {
+  uint16_t cached = layers_cache[row][col];
+  if (cached != ______) {
+    return cached;
+  }
+
   for (uint8_t layer = LAYERS - 1; layer >= 0; layer--) {
     if (IS_LAYER_ON(layer)) {
       uint16_t keycode = pgm_read_word(&(layers[layer][row][col]));
@@ -189,6 +200,11 @@ void handle_keychange(uint8_t row, uint8_t col, state_t state) {
       }
       break;
     }
+  }
+  if (state == DOWN) {
+    layers_cache[row][col] = keycode;
+  } else {
+    layers_cache[row][col] = ______;
   }
 }
 
