@@ -109,6 +109,9 @@ void init_bluetooth(bool reset) {
     //   0D Class of Device
     //   2540 Peripheral / Keyboard
     ble.println("AT+GAPSETADVDATA=02-01-06-07-02-0F-18-0A-18-12-18-03-0D-40-25");
+
+    // Set Bluetooth TX Power level
+    ble.println("AT+BLEPOWERLEVEL=-20");
     ble.echo(false);
     ble.verbose(false);
     ble.println("ATZ");
