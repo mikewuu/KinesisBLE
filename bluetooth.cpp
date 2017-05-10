@@ -1,18 +1,14 @@
 #include <Arduino.h>
-#include <SPI.h>
-#include <SoftwareSerial.h>
-#include <Adafruit_BLE.h>
-#include <Adafruit_BluefruitLE_SPI.h>
+#include <bluefruit.h>
 
+#include "config.h"
 #include "keycodes.h"
 
-#define BLE_SPI_CS 8
-#define BLE_SPI_IRQ 7
-#define BLE_SPI_RST 4
+BLEHidAdafruit blehid;
+BLECharacteristic battery_level;
 
 #define REPORT_KEYS 6
 
-Adafruit_BluefruitLE_SPI ble(BLE_SPI_CS, BLE_SPI_IRQ, BLE_SPI_RST);
 uint8_t report[REPORT_KEYS] = { 0 };
 uint8_t active_mods = 0;
 char payload[43] = "";
@@ -26,20 +22,14 @@ void del_mods(uint8_t mods) {
 }
 
 void send_report_keyboard() {
-  sprintf(payload,
-    "AT+BLEKEYBOARDCODE=%02x-00-%02x-%02x-%02x-%02x-%02x-%02x",
+  bool err = blehid.keyboardReport(
     active_mods, report[0], report[1], report[2], report[3], report[4], report[5]
   );
-  ble.println(payload);
-  if (!ble.waitForOK()) {
-    send_report_keyboard();
-  }
 }
 
 void register_keydown(uint16_t keycode) {
   if (IN_KEYBOARD_RANGE(keycode)) {
     add_mods((uint8_t)(keycode >> 8));
-    send_report_keyboard();
 
     for (uint8_t i = 0; i < REPORT_KEYS; i++) {
       if (report[i] == (uint8_t)(keycode & 0xFF)) {
@@ -57,7 +47,6 @@ void register_keydown(uint16_t keycode) {
 void register_keyup(uint16_t keycode) {
   if (IN_KEYBOARD_RANGE(keycode)) {
     del_mods((uint8_t)(keycode >> 8));
-    send_report_keyboard();
 
     for (uint8_t i = 0; i < REPORT_KEYS; i++) {
       if (report[i] == (uint8_t)(keycode & 0xFF)) {
@@ -68,66 +57,53 @@ void register_keyup(uint16_t keycode) {
   }
 }
 
-void init_bluetooth(bool reset) {
-  ble.begin(false);
-  if (reset){
-    ble.factoryReset();
-    ble.setMode(BLUEFRUIT_MODE_COMMAND);
-    ble.println("AT+GATTCLEAR");
-    ble.println("AT+GAPDEVNAME=The Blanck Keyboard.");
-    ble.println("AT+GAPINTERVALS=10,30,,");
+void init_bluetooth() {
+  //Bluefruit.clearBonds();
+  Bluefruit.setName("The Blanck Keyboard");
+  Bluefruit.setTxPower(-4);
+  Bluefruit.begin();
 
-    // Add battery service
-    ble.println("AT+GATTADDSERVICE=UUID=0x180F");
-    // Battery level
-    ble.println("AT+GATTADDCHAR=UUID=0x2A19,PROPERTIES=0x02,DATATYPE=3,MIN_LEN=1,MAX_LEN=1,VALUE=0");
+  BLEDis bledis;
+  bledis.setManufacturer("Adrien Friggeri");
+  bledis.setModel("The Blanck Keyboard");
+  bledis.begin();
 
-    ble.println("AT+BLEHIDEN=1");
-    // Device Information Service
-    ble.println("AT+GATTADDSERVICE=UUID=0x180A");
-    // Manufacturer name
-    ble.println("AT+GATTADDCHAR=UUID=0x2A29,PROPERTIES=0x02,DATATYPE=1,MIN_LEN=15,MAX_LEN=15,VALUE=Adrien Friggeri");
-    // Model Number String
-    ble.println("AT+GATTADDCHAR=UUID=0x2A24,PROPERTIES=0x02,DATATYPE=1,MIN_LEN=3,MAX_LEN=3,VALUE=1.0");
-    // PnP_ID
-    // Vendor ID Source: 0x02
-    // Vendor ID: 0x2311
-    // Product ID: 0xcafe
-    // Product Version: 0x0001
-    ble.println("AT+GATTADDCHAR=UUID=0x2A50,PROPERTIES=0x02,DATATYPE=2,MIN_LEN=7,MAX_LEN=7,VALUE=02-11-23-fe-ca-01-00");
+  BLECharacteristic pnp_id = BLECharacteristic(UUID16_CHR_PNP_ID);
+  pnp_id.setProperties(CHR_PROPS_READ);
+  pnp_id.setFixedLen(7);
+  pnp_id.begin();
+  uint8_t pnp_id_data[7] = {0x02, 0x11, 0x23, 0xfe, 0xca, 0x01, 0x00};
+  pnp_id.write(pnp_id_data, 7);
 
-    // Set advertising data:
-    // 2 bytes:
-    //   01 Flag
-    //   06 LE General Discoverable Mode | BR/EDR Not Supported
-    // 7 bytes:
-    //   02 Incomplete List of 16-bit Service Class UUIDs
-    //   180F Battery Service
-    //   180A Device Information Service
-    //   1812 Human Interface Device
-    // 3 bytes:
-    //   0D Class of Device
-    //   2540 Peripheral / Keyboard
-    ble.println("AT+GAPSETADVDATA=02-01-06-07-02-0F-18-0A-18-12-18-03-0D-40-25");
+  BLEService battery = BLEService(UUID16_SVC_BATTERY);
+  battery.begin();
+  battery_level = BLECharacteristic(UUID16_CHR_BATTERY_LEVEL);
+  battery_level.setProperties(CHR_PROPS_READ);
+  battery_level.setFixedLen(1);
+  battery_level.begin();
+  battery_level.write(0);
 
-    // Set Bluetooth TX Power level
-    ble.println("AT+BLEPOWERLEVEL=-20");
-    ble.echo(false);
-    ble.verbose(false);
-    ble.println("ATZ");
-    delay(1000);
-  }
+  blehid.begin();
 
-  // for debugging purposes
-  // ble.setMode(BLUEFRUIT_MODE_DATA);
+  Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
+  Bluefruit.Advertising.addTxPower();
+
+  Bluefruit.Advertising.addAppearance(BLE_APPEARANCE_HID_KEYBOARD);
+  Bluefruit.Advertising.addService(blehid);
+  Bluefruit.Advertising.addService(battery);
+
+  uint8_t cod_data[2] = {0x25, 0x40};
+  Bluefruit.Advertising.addData(BLE_GAP_AD_TYPE_CLASS_OF_DEVICE, cod_data, 2);
+
+  Bluefruit.Advertising.addName();
+
+  Bluefruit.Advertising.start();
 }
 
 void update_battery(uint8_t bat_percentage) {
-  sprintf(payload, "AT+GATTCHAR=1,%d", bat_percentage);
-  ble.println(payload);
-  delay(5);
+  battery_level.write(bat_percentage);
 }
 
 bool is_bluetooth_connected() {
-  return ble.isConnected();
+  return Bluefruit.connected();
 }

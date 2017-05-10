@@ -1,21 +1,17 @@
 #include <Arduino.h>
 
+#include "config.h"
 #include "keycodes.h"
 #include "keymap.h"
 #include "bluetooth.h"
 
-#define BLUETOOTH_RESET false
-
-#define VBAT 9
-#define LED 13
-
 #define COLS 6
 #define ROWS 8
 
-#define DEBOUNCING_DELAY 5
+#define DEBOUNCING_DELAY 10
 
-uint8_t col_pins[COLS] = { 11, 10, 5, 6, 3, 2 };
-uint8_t row_pins[ROWS] = { 0, 1, 23, 22, 20, 21, 18, 19 };
+uint8_t col_pins[COLS] = COL_PINS;
+uint8_t row_pins[ROWS] = ROW_PINS;
 
 uint8_t prev_states[ROWS] = { 0 };
 uint8_t curr_states[ROWS] = { 0 };
@@ -26,11 +22,12 @@ inline
 state_t get_state(uint8_t row, uint8_t col) {
   return (curr_states[2 * row + (col & 1)] >> (col >> 1)) & 1;
 }
-
+const int baudrate = 115200;
 void setup(void) {
   pinMode(LED, OUTPUT);
+  pinMode(CAPS_LED, OUTPUT);
 
-  init_bluetooth(BLUETOOTH_RESET);
+  init_bluetooth();
 
   for (uint8_t row = 0; row < ROWS; row++) {
     pinMode(row_pins[row], OUTPUT);
@@ -51,7 +48,7 @@ void loop(void) {
   if (!is_bluetooth_connected()) {
     last_reported = 999;
     last_report_time = 0;
-    analogWrite(LED, 32);
+    analogWrite(LED, 128);
     delay(500);
     return;
   }

@@ -1,5 +1,6 @@
 #include <Arduino.h>
 
+#include "config.h"
 #include "keymap.h"
 #include "keycodes.h"
 #include "bluetooth.h"
@@ -29,6 +30,10 @@ uint8_t pressed_alone = 0;
 #define PRESSED_LOW  2
 #define PRESSED_RAIS 3
 #define PRESSED_HOME 4
+
+#define DUAL_TIMEOUT 300
+
+bool caps_lock = false;
 
 
 uint16_t layers_cache[4][12] = {
@@ -99,7 +104,7 @@ void handle_keychange(uint8_t row, uint8_t col, state_t state) {
       } else {
         register_keyup(K_SHFT);
         if (
-            (millis() - last_pressed < 1000) &&
+            (millis() - last_pressed < DUAL_TIMEOUT) &&
             (pressed_alone & (1 << PRESSED_LSFT))
         ) {
           if (IS_LAYER_ON(RAISE)) {
@@ -124,7 +129,7 @@ void handle_keychange(uint8_t row, uint8_t col, state_t state) {
       } else {
         register_keyup(K_SHFT);
         if (
-            (millis() - last_pressed < 1000) &&
+            (millis() - last_pressed < DUAL_TIMEOUT) &&
             (pressed_alone & (1 << PRESSED_RSFT))
         ) {
           if (IS_LAYER_ON(RAISE)) {
@@ -149,7 +154,7 @@ void handle_keychange(uint8_t row, uint8_t col, state_t state) {
       } else {
         unset_layer(LOWER);
         if (
-            (millis() - last_pressed < 1000) &&
+            (millis() - last_pressed < DUAL_TIMEOUT) &&
             (pressed_alone & (1 << PRESSED_LOW))
         ) {
           register_keydown(K_QUOT);
@@ -166,7 +171,7 @@ void handle_keychange(uint8_t row, uint8_t col, state_t state) {
       } else {
         unset_layer(RAISE);
         if (
-            (millis() - last_pressed < 1000) &&
+            (millis() - last_pressed < DUAL_TIMEOUT) &&
             (pressed_alone & (1 << PRESSED_RAIS))
         ) {
           register_keydown(K_APOS);
@@ -188,6 +193,9 @@ void handle_keychange(uint8_t row, uint8_t col, state_t state) {
         ) {
           register_keydown(K_CAPS);
           register_keyup(K_CAPS);
+
+          caps_lock = !caps_lock;
+          digitalWrite(CAPS_LED, caps_lock ? HIGH : LOW);
         }
       }
       break;
@@ -207,4 +215,3 @@ void handle_keychange(uint8_t row, uint8_t col, state_t state) {
     layers_cache[row][col] = ______;
   }
 }
-
