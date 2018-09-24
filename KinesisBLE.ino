@@ -22,7 +22,9 @@ inline
 state_t get_state(uint8_t row, uint8_t col) {
   return (curr_states[2 * row + (col & 1)] >> (col >> 1)) & 1;
 }
+
 const int baudrate = 115200;
+
 void setup(void) {
   pinMode(LED, OUTPUT);
   pinMode(CAPS_LED, OUTPUT);
@@ -37,6 +39,9 @@ void setup(void) {
     pinMode(col_pins[col], INPUT_PULLUP);
     digitalWrite(col_pins[col], HIGH);
   }
+
+
+  Serial.begin(baudrate);
 
 }
 

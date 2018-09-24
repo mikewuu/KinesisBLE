@@ -27,7 +27,7 @@ void send_report_keyboard() {
 }
 
 void register_keydown(uint16_t keycode) { 
-
+  Serial.write(keycode);
 //    add_mods((uint8_t)(keycode >> 8));
 //
 //    for (uint8_t i = 0; i < REPORT_KEYS; i++) {
@@ -44,6 +44,7 @@ void register_keydown(uint16_t keycode) {
 }
 
 void register_keyup(uint16_t keycode) {
+  Serial.write(keycode);
 //    del_mods((uint8_t)(keycode >> 8));
 //
 //    for (uint8_t i = 0; i < REPORT_KEYS; i++) {
