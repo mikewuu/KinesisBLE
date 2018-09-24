@@ -56,24 +56,15 @@ void register_keyup(uint16_t keycode) {
 }
 
 void init_bluetooth() {
-  //Bluefruit.clearBonds();
-  Bluefruit.setName("The Blanck Keyboard");
+
+  Bluefruit.setName("Kinesis Advantage 2");
   Bluefruit.setTxPower(-4);
   Bluefruit.begin();
 
   BLEDis bledis;
-  bledis.setManufacturer("Adrien Friggeri");
-  bledis.setModel("The Blanck Keyboard");
+  bledis.setManufacturer("mike wu");
+  bledis.setModel("Kinesis Advantage 2");
   bledis.begin();
-
-  BLECharacteristic pnp_id = BLECharacteristic(UUID16_CHR_PNP_ID);
-  pnp_id.setProperties(CHR_PROPS_READ);
-  pnp_id.setFixedLen(7);
-  pnp_id.begin();
-  uint8_t pnp_id_data[7] = {0x02, 0x11, 0x23, 0xfe, 0xca, 0x01, 0x00};
-  pnp_id.write(pnp_id_data, 7);
-
-
 
   blehid.begin();
 
@@ -83,12 +74,13 @@ void init_bluetooth() {
   Bluefruit.Advertising.addAppearance(BLE_APPEARANCE_HID_KEYBOARD);
   Bluefruit.Advertising.addService(blehid);
 
-  uint8_t cod_data[2] = {0x25, 0x40};
-  Bluefruit.Advertising.addData(BLE_GAP_AD_TYPE_CLASS_OF_DEVICE, cod_data, 2);
-
   Bluefruit.Advertising.addName();
 
-  Bluefruit.Advertising.start();
+  // Apple recommended advertising settings
+  Bluefruit.Advertising.restartOnDisconnect(true);
+  Bluefruit.Advertising.setInterval(32, 244);    // in unit of 0.625 ms
+  Bluefruit.Advertising.setFastTimeout(30);      // number of seconds in fast mode
+  Bluefruit.Advertising.start(0);                // 0 = Don't stop advertising after n seconds
 }
 
 bool is_bluetooth_connected() {
