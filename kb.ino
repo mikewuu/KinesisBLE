@@ -111,11 +111,13 @@ void loop(void) {
     // there is a row change
 
     for (uint8_t col = 0; col < COLS; col++) {
+      
       // shift right to look at current column, then bitwise & 1 which
       // ignores columns to the left and checks to see if state is a
       // 1 or 0.
       state_t curr = (curr_states[row] >> col) & 1;       
       state_t prev = (prev_states[row] >> col) & 1;
+      
       if (curr != prev) {
         handle_keychange(row >> 1, 2 * col + (row & 1), curr);
         prev_states[row] ^= (uint16_t)1 << col;

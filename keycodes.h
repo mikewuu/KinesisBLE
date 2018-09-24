@@ -7,7 +7,7 @@
 
 
 #define K_NO   0x0000
-#define K_Q    0x0004
+#define K_A    0x0004
 #define K_B    0x0005
 #define K_C    0x0006
 #define K_D    0x0007
@@ -23,7 +23,7 @@
 #define K_N    0x0011
 #define K_O    0x0012
 #define K_P    0x0013
-#define K_A    0x0014
+#define K_Q    0x0014
 #define K_R    0x0015
 #define K_S    0x0016
 #define K_T    0x0017
