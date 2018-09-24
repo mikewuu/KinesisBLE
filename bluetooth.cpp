@@ -5,7 +5,6 @@
 #include "keycodes.h"
 
 BLEHidAdafruit blehid;
-BLECharacteristic battery_level;
 
 #define REPORT_KEYS 6
 
@@ -27,34 +26,32 @@ void send_report_keyboard() {
   );
 }
 
-void register_keydown(uint16_t keycode) {
-  if (IN_KEYBOARD_RANGE(keycode)) {
-    add_mods((uint8_t)(keycode >> 8));
+void register_keydown(uint16_t keycode) { 
 
-    for (uint8_t i = 0; i < REPORT_KEYS; i++) {
-      if (report[i] == (uint8_t)(keycode & 0xFF)) {
-        break;
-      }
-      if (report[i] == 0) {
-        report[i] = (uint8_t)(keycode & 0xFF);
-        break;
-      }
-    }
-    send_report_keyboard();
-  }
+//    add_mods((uint8_t)(keycode >> 8));
+//
+//    for (uint8_t i = 0; i < REPORT_KEYS; i++) {
+//      if (report[i] == (uint8_t)(keycode & 0xFF)) {
+//        break;
+//      }
+//      if (report[i] == 0) {
+//        report[i] = (uint8_t)(keycode & 0xFF);
+//        break;
+//      }
+//    }
+//    send_report_keyboard();
+
 }
 
 void register_keyup(uint16_t keycode) {
-  if (IN_KEYBOARD_RANGE(keycode)) {
-    del_mods((uint8_t)(keycode >> 8));
-
-    for (uint8_t i = 0; i < REPORT_KEYS; i++) {
-      if (report[i] == (uint8_t)(keycode & 0xFF)) {
-        report[i] = 0;
-      }
-    }
-    send_report_keyboard();
-  }
+//    del_mods((uint8_t)(keycode >> 8));
+//
+//    for (uint8_t i = 0; i < REPORT_KEYS; i++) {
+//      if (report[i] == (uint8_t)(keycode & 0xFF)) {
+//        report[i] = 0;
+//      }
+//    }
+//    send_report_keyboard();
 }
 
 void init_bluetooth() {
@@ -75,13 +72,7 @@ void init_bluetooth() {
   uint8_t pnp_id_data[7] = {0x02, 0x11, 0x23, 0xfe, 0xca, 0x01, 0x00};
   pnp_id.write(pnp_id_data, 7);
 
-  BLEService battery = BLEService(UUID16_SVC_BATTERY);
-  battery.begin();
-  battery_level = BLECharacteristic(UUID16_CHR_BATTERY_LEVEL);
-  battery_level.setProperties(CHR_PROPS_READ);
-  battery_level.setFixedLen(1);
-  battery_level.begin();
-  battery_level.write(0);
+
 
   blehid.begin();
 
@@ -90,7 +81,6 @@ void init_bluetooth() {
 
   Bluefruit.Advertising.addAppearance(BLE_APPEARANCE_HID_KEYBOARD);
   Bluefruit.Advertising.addService(blehid);
-  Bluefruit.Advertising.addService(battery);
 
   uint8_t cod_data[2] = {0x25, 0x40};
   Bluefruit.Advertising.addData(BLE_GAP_AD_TYPE_CLASS_OF_DEVICE, cod_data, 2);
@@ -98,10 +88,6 @@ void init_bluetooth() {
   Bluefruit.Advertising.addName();
 
   Bluefruit.Advertising.start();
-}
-
-void update_battery(uint8_t bat_percentage) {
-  battery_level.write(bat_percentage);
 }
 
 bool is_bluetooth_connected() {

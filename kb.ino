@@ -5,8 +5,8 @@
 #include "keymap.h"
 #include "bluetooth.h"
 
-#define COLS 6
-#define ROWS 8
+#define ROWS 7
+#define COLS 15
 
 #define DEBOUNCING_DELAY 10
 
@@ -119,7 +119,7 @@ void loop(void) {
       state_t prev = (prev_states[row] >> col) & 1;
       
       if (curr != prev) {
-        handle_keychange(row >> 1, 2 * col + (row & 1), curr);
+        handle_keychange(row, col, curr);
         prev_states[row] ^= (uint16_t)1 << col;
         goto END_OF_LOOP;   // only handle 1 key change each iteration, debouncing!
       }
