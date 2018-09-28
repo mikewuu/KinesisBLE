@@ -5,6 +5,7 @@
 #include "keycodes.h"
 #include "keymap.h"
 #include "bluetooth.h"
+#include "battery.h"
 #include "Adafruit_MCP23017.h"
 
 #define ROWS 15
@@ -49,11 +50,43 @@ void setup(void) {
 
 
 //  Serial.print("Ready");
+
+  pinMode(LED_CAPS_PIN, OUTPUT);
+  pinMode(LED_NUM_PIN, OUTPUT);
+  pinMode(LED_SCR_PIN, OUTPUT);
+  pinMode(LED_KEY_PIN, OUTPUT);
 }
 
 
 
 void loop(void) {
+
+  /**
+   * Read battery and update Kinesis LEDs
+   * 
+   */
+   uint8_t battery = batteryPercentage();
+   if(battery > 75) {
+    digitalWrite(LED_CAPS_PIN, HIGH);
+    digitalWrite(LED_NUM_PIN, HIGH);
+    digitalWrite(LED_SCR_PIN, HIGH);
+    digitalWrite(LED_KEY_PIN, HIGH);
+   } else if (battery > 50) {
+    digitalWrite(LED_CAPS_PIN, HIGH);
+    digitalWrite(LED_NUM_PIN, HIGH);
+    digitalWrite(LED_SCR_PIN, HIGH);
+    digitalWrite(LED_KEY_PIN, LOW);
+   } else if (battery > 25) {
+    digitalWrite(LED_CAPS_PIN, HIGH);
+    digitalWrite(LED_NUM_PIN, HIGH);
+    digitalWrite(LED_SCR_PIN, LOW);
+    digitalWrite(LED_KEY_PIN, LOW);
+   } else {
+    digitalWrite(LED_CAPS_PIN, HIGH);
+    digitalWrite(LED_NUM_PIN, LOW);
+    digitalWrite(LED_SCR_PIN, LOW);
+    digitalWrite(LED_KEY_PIN, LOW);
+   }
 
   for (uint8_t row = 0; row < ROWS; row++) {
     
