@@ -5,21 +5,40 @@
 #include "keycodes.h"
 #include "bluetooth.h"
 
-uint16_t matrix_cache[7][15] = {
-  {______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______},
-  {______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______},
-  {______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______},
-  {______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______}
+uint16_t matrix_cache[15][7] = {
+  {______, ______, ______, ______, ______, ______, ______},
+  {______, ______, ______, ______, ______, ______, ______}, 
+  {______, ______, ______, ______, ______, ______, ______},
+  {______, ______, ______, ______, ______, ______, ______}, 
+  {______, ______, ______, ______, ______, ______, ______},
+  {______, ______, ______, ______, ______, ______, ______}, 
+  {______, ______, ______, ______, ______, ______, ______},
+  {______, ______, ______, ______, ______, ______, ______}, 
+  {______, ______, ______, ______, ______, ______, ______},
+  {______, ______, ______, ______, ______, ______, ______}, 
+  {______, ______, ______, ______, ______, ______, ______},
+  {______, ______, ______, ______, ______, ______, ______}, 
+  {______, ______, ______, ______, ______, ______, ______},
+  {______, ______, ______, ______, ______, ______, ______}, 
+  {______, ______, ______, ______, ______, ______, ______}
 };
 
-const uint16_t PROGMEM matrix[7][15] = {
-  {KEY_EQUAL,        KEY_1,     KEY_2,      KEY_3,    KEY_4,    KEY_5,     KEY_6,    KEY_7,    KEY_8,     KEY_9,         KEY_0,          KEY_MINUS,          KEY_ESC,   KEY_F1,      KEY_F2        },
-  {KEY_TAB,          KEY_Q,     KEY_W,      KEY_E,    KEY_R,    KEY_T,     KEY_Y,    KEY_U,    KEY_I,     KEY_O,         KEY_P,          KEY_BACKSLASH,      KEY_F3,    KEY_F4,      KEY_F5        },
-  {KEY_CAPSLOCK,     KEY_A,     KEY_S,      KEY_D,    KEY_F,    KEY_G,     KEY_H,    KEY_J,    KEY_K,     KEY_L,         KEY_SEMICOLON,  KEY_APOSTROPHE,     KEY_F6,    KEY_F7,      KEY_F8        },
-  {KEY_MOD_LSHIFT,   KEY_Z,     KEY_X,      KEY_C,    KEY_V,    KEY_B,     KEY_N,    KEY_M,    KEY_COMMA, KEY_DOT,       KEY_SLASH,      KEY_MOD_RSHIFT,     KEY_F9,    KEY_F10,     KEY_F11       },
-  {______,           KEY_GRAVE, KEY_INSERT, KEY_LEFT, ______,   KEY_RIGHT, KEY_UP,   ______,   KEY_DOWN,  KEY_LEFTBRACE, KEY_RIGHTBRACE, ______,             KEY_F12,   KEY_SYSRQ,   KEY_SCROLLLOCK},
-  {______,           ______,    KEY_SL1,    KEY_SL2,  ______,   KEY_SL5,   KEY_SR4,  KEY_SR3,  KEY_SR6,   ______,        ______,         ______,             KEY_PAUSE, KEY_PROGRAM, KEY_KEYPAD    },
-  {______,           ______,    ______,     KEY_SL4,  KEY_SL3,  KEY_SL6,   KEY_SR1,  ______,   KEY_SR2,   KEY_SR5,       ______,         ______,             ______,    ______,      ______        }
+const uint16_t PROGMEM matrix[15][7] = {
+  {K_EQUAL, K_TAB,       K_CAPSLOCK,   K_MOD_LSHIFT, ______,       ______,    ______},
+  {K_1,     K_Q,         K_A,          K_Z,          K_GRAVE,      ______,    ______}, 
+  {K_2,     K_W,         K_S,          K_X,          K_INSERT,     K_SL1,     ______},
+  {K_3,     K_E,         K_D,          K_C,          K_LEFT,       K_SL2,     K_SL4}, 
+  {K_4,     K_R,         K_F,          K_V,          ______,       ______,    K_SL3},
+  {K_5,     K_T,         K_G,          K_B,          K_RIGHT,      K_SL5,     K_SL6}, 
+  {K_6,     K_Y,         K_H,          K_N,          K_UP,         K_SR4,     K_SR1},
+  {K_7,     K_U,         K_J,          K_M,          ______,       K_SR3,     ______}, 
+  {K_8,     K_I,         K_K,          K_COMMA,      K_DOWN,       K_SR6,     K_SR2},
+  {K_9,     K_O,         K_L,          K_DOT,        K_LEFTBRACE,  ______,    K_SR5}, 
+  {K_0,     K_P,         K_SEMICOLON,  K_SLASH,      K_RIGHTBRACE, ______,    ______},
+  {K_MINUS, K_BACKSLASH, K_APOSTROPHE, K_MOD_RSHIFT, ______,       ______,    ______},
+  {K_ESC,   K_F3,        K_F6,         K_F9,         K_F12,        K_PAUSE,   ______}, 
+  {K_F1,    K_F4,        K_F7,         K_F10,        K_SYSRQ,      K_PROGRAM, ______},
+  {K_F2,    K_F5,        K_F8,         K_F11,        K_SCROLLLOCK, K_KEYPAD,  ______}
 };
 
 
@@ -36,13 +55,12 @@ uint16_t get_keycode_at(uint8_t row, uint8_t col) {
       return keycode;
     }
   
-  return KEY_NONE;
+  return K_NONE;
 }
 
 void handle_keychange(uint8_t row, uint8_t col, state_t state) { 
   
   uint16_t keycode = get_keycode_at(row, col);
-
   if (state == DOWN) {
     register_keydown(keycode);
   } else {

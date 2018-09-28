@@ -23,7 +23,6 @@ uint8_t debouncing = DEBOUNCING_DELAY;
 inline
 state_t get_state(uint8_t row, uint8_t col) {
   return (curr_states[row] >> (col)) & 1;
-//  return (curr_states[2 * row + (col & 1)] >> (col >> 1)) & 1;
 }
 
 const int baudrate = 115200;
@@ -34,7 +33,7 @@ void setup(void) {
 
   mcp.begin();
 
-  Serial.begin(baudrate);
+//  Serial.begin(baudrate);
   
   init_bluetooth();
 
@@ -49,8 +48,7 @@ void setup(void) {
   }
 
 
-  Serial.print("ready");
-  
+//  Serial.print("Ready");
 }
 
 
@@ -61,90 +59,98 @@ void loop(void) {
     
     uint8_t row_read = 0;
 
-    mcp.digitalWrite(row_pins[row], LOW);                     // pull the row we're currently reading to LOW
+    /**
+     * Pull current row to low as columns are set to INPUT_PULLUP.
+     * The alternative would be to wire pulldown resistors.
+     */
 
-
-    // We set to LOW for the row we're reading because we're using INPUT_PULLUP on the column
-    // pins so they default to HIGH. If we didn't do this we'd have to wire pulldown 
-    // resistors to every switch!
-    
+    mcp.digitalWrite(row_pins[row], LOW);                  
+  
     delayMicroseconds(30);
-    
-    for (uint8_t col = 0; col < COLS; col++) {            // for each column in the row
-      if (digitalRead(col_pins[col]) == LOW) {            // if column is LOW, means a key is pressed
-        row_read |= 1 << col;                             // shift left by column number first and then turn last binary digit into a 1
-        Serial.print("row: ");
-        Serial.println(row);
-        Serial.print("col: ");
-        Serial.println(col);
+
+    /**
+     * Loop through each column on each row to check to see if a key
+     * was pressed. The column pin will read LOW too if a key 
+     * switch is down.
+     */
+    for (uint8_t col = 0; col < COLS; col++) {            
+      if (digitalRead(col_pins[col]) == LOW) {            
+        
+        /**
+         * Turn first bit into 1 and shift left by column number.
+         * If the 5th and 7th column of the row was pressed, 
+         * row_read for the row would be 101000.
+         */         
+        row_read |= 1 << col;
+        
       }
     }
 
-    // if all 6 column pins are low (ie. all 6 keys in row are pressed)
-    // 1
-    // 11
-    // 111
-    // 1111
-    // 11111
-    // 111111
 
-    // if the temp state of the row isn't the same as what we read
-//    if (temp_states[row] != row_read) {
-//      temp_states[row] = row_read;          // set the temp state the read row state
-//      debouncing = DEBOUNCING_DELAY;        // add a debouncing delay
-//    }
+    /**
+     * Set Debouncing Delay
+     * Every new row_read needs to be the same (stored in temp_states)
+     * for DEBOUNCING_DELAY amount of time. ie. Prevent the row
+     * states from rapidly changing.
+     */
+    if (temp_states[row] != row_read) {
+      temp_states[row] = row_read;          
+      debouncing = DEBOUNCING_DELAY;        
+    }
     
     mcp.digitalWrite(row_pins[row], HIGH);
     
   }
-//
-//  // Basically, want the read row to not have changed for DEBOUNCING_DELAY amount
-//  // of time until we process what we've read.
-//
-//  if (debouncing) {
-//    if (--debouncing) {     // decreases debouncing delay by 1
-//      delay(1);
-//      // debouncing, don't update states             
-//    } else {
-//
-//      // read the row DEBOUNCING_DELAY number of times and it's still the same,
-//      // so let's update our states
-//      
-//      for (uint8_t row = 0; row < ROWS; row++) {
-//        prev_states[row] = curr_states[row];
-//        curr_states[row] = temp_states[row];
-//
-//        // temp is not the same as curr(ent) because we're debouncing
-//        // to prevent multiple key switch registers
-//      }
-//    }
-//  }
-//
-//  // for each row
-//  for (uint8_t row = 0; row < ROWS; row++) {
-//
-//    if (curr_states[row] == prev_states[row]) {
-//      // no change in state
-//      continue;
-//    }
-//
-//    // there is a row change
-//
-//    for (uint8_t col = 0; col < COLS; col++) {
-//      
-//      // shift right to look at current column, then bitwise & 1 which
-//      // ignores columns to the left and checks to see if state is a
-//      // 1 or 0.
-//      state_t curr = (curr_states[row] >> col) & 1;       
-//      state_t prev = (prev_states[row] >> col) & 1;
-//      
-//      if (curr != prev) {
-//        handle_keychange(row, col, curr);
-//        prev_states[row] ^= (uint16_t)1 << col;
-//        goto END_OF_LOOP;   // only handle 1 key change each iteration, debouncing!
-//      }
-//    }
-//  }
-//
-//  END_OF_LOOP:;
+
+  /**
+   * Update States
+   * If debouncing delay is up and the states are still the same, 
+   * then go ahead and store the new states to be processed.
+   */
+  if (debouncing) {
+    if (--debouncing) {
+      delay(1);          
+    } else {
+      for (uint8_t row = 0; row < ROWS; row++) {
+        prev_states[row] = curr_states[row];
+        curr_states[row] = temp_states[row];
+      }
+    }
+  }
+
+  /**
+   * Compare Row States
+   * Check to see if anything has changed and subsequently handle
+   * the change.
+   */
+  for (uint8_t row = 0; row < ROWS; row++) {
+
+    if (curr_states[row] == prev_states[row]) {
+      continue;
+    }
+
+    for (uint8_t col = 0; col < COLS; col++) {
+      
+      // shift right to look at current column, then bitwise & 1 which
+      // ignores columns to the left and checks to see if state is a
+      // 1 or 0.
+
+      /**
+       * Check Each Column
+       * Examines each bit to see if the state is a 0 or a 1. Shift
+       * right by column index to get current column and & 1 to
+       * ignore all bits to the left.
+       */
+      state_t curr = (curr_states[row] >> col) & 1;       
+      state_t prev = (prev_states[row] >> col) & 1;
+      
+      if (curr != prev) {
+        handle_keychange(row, col, curr);
+        prev_states[row] ^= (uint16_t)1 << col;
+        goto END_OF_LOOP;                                                           // Handle 1 key change at a time
+      }
+    }
+  }
+
+  END_OF_LOOP:;
 }

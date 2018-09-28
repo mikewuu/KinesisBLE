@@ -2,123 +2,125 @@
 #define KEYCODES_H
 
 
-#define KEY_NONE   0x00
-#define ______     (KEY_NONE)
+#define K_NONE   0x0000
+#define ______     (K_NONE)
 
 /**
- * Modifier masks - used for the first byte in the HID report.
- * NOTE: The second byte in the report is reserved, 0x00
+ * Modifier Masks
+ * Use the first byte for modifiers. This allows for bit-shifting 
+ * to combine modifiers without checking to see if the key
+ * pressed was a modifier or regular key.
  */
-#define KEY_MOD_LCTRL  0x01
-#define KEY_MOD_LSHIFT 0x02
-#define KEY_MOD_LALT   0x04
-#define KEY_MOD_LMETA  0x08 // LEFT CMD
-#define KEY_MOD_RCTRL  0x10
-#define KEY_MOD_RSHIFT 0x20
-#define KEY_MOD_RALT   0x40
-#define KEY_MOD_RMETA  0x80 // Right CMD
+#define K_MOD_LCTRL  0x0100
+#define K_MOD_LSHIFT 0x0200
+#define K_MOD_LALT   0x0400
+#define K_MOD_LMETA  0x0800 // LEFT CMD
+#define K_MOD_RCTRL  0x1000
+#define K_MOD_RSHIFT 0x2000
+#define K_MOD_RALT   0x4000
+#define K_MOD_RMETA  0x8000 // Right CMD
 
-#define KEY_A 0x04 // Keyboard a and A
-#define KEY_B 0x05 // Keyboard b and B
-#define KEY_C 0x06 // Keyboard c and C
-#define KEY_D 0x07 // Keyboard d and D
-#define KEY_E 0x08 // Keyboard e and E
-#define KEY_F 0x09 // Keyboard f and F
-#define KEY_G 0x0a // Keyboard g and G
-#define KEY_H 0x0b // Keyboard h and H
-#define KEY_I 0x0c // Keyboard i and I
-#define KEY_J 0x0d // Keyboard j and J
-#define KEY_K 0x0e // Keyboard k and K
-#define KEY_L 0x0f // Keyboard l and L
-#define KEY_M 0x10 // Keyboard m and M
-#define KEY_N 0x11 // Keyboard n and N
-#define KEY_O 0x12 // Keyboard o and O
-#define KEY_P 0x13 // Keyboard p and P
-#define KEY_Q 0x14 // Keyboard q and Q
-#define KEY_R 0x15 // Keyboard r and R
-#define KEY_S 0x16 // Keyboard s and S
-#define KEY_T 0x17 // Keyboard t and T
-#define KEY_U 0x18 // Keyboard u and U
-#define KEY_V 0x19 // Keyboard v and V
-#define KEY_W 0x1a // Keyboard w and W
-#define KEY_X 0x1b // Keyboard x and X
-#define KEY_Y 0x1c // Keyboard y and Y
-#define KEY_Z 0x1d // Keyboard z and Z
+#define K_A 0x0004 // Keyboard a and A
+#define K_B 0x0005 // Keyboard b and B
+#define K_C 0x0006 // Keyboard c and C
+#define K_D 0x0007 // Keyboard d and D
+#define K_E 0x0008 // Keyboard e and E
+#define K_F 0x0009 // Keyboard f and F
+#define K_G 0x000a // Keyboard g and G
+#define K_H 0x000b // Keyboard h and H
+#define K_I 0x000c // Keyboard i and I
+#define K_J 0x000d // Keyboard j and J
+#define K_K 0x000e // Keyboard k and K
+#define K_L 0x000f // Keyboard l and L
+#define K_M 0x0010 // Keyboard m and M
+#define K_N 0x0011 // Keyboard n and N
+#define K_O 0x0012 // Keyboard o and O
+#define K_P 0x0013 // Keyboard p and P
+#define K_Q 0x0014 // Keyboard q and Q
+#define K_R 0x0015 // Keyboard r and R
+#define K_S 0x0016 // Keyboard s and S
+#define K_T 0x0017 // Keyboard t and T
+#define K_U 0x0018 // Keyboard u and U
+#define K_V 0x0019 // Keyboard v and V
+#define K_W 0x001a // Keyboard w and W
+#define K_X 0x001b // Keyboard x and X
+#define K_Y 0x001c // Keyboard y and Y
+#define K_Z 0x001d // Keyboard z and Z
 
-#define KEY_1 0x1e // Keyboard 1 and !
-#define KEY_2 0x1f // Keyboard 2 and @
-#define KEY_3 0x20 // Keyboard 3 and #
-#define KEY_4 0x21 // Keyboard 4 and $
-#define KEY_5 0x22 // Keyboard 5 and %
-#define KEY_6 0x23 // Keyboard 6 and ^
-#define KEY_7 0x24 // Keyboard 7 and &
-#define KEY_8 0x25 // Keyboard 8 and *
-#define KEY_9 0x26 // Keyboard 9 and (
-#define KEY_0 0x27 // Keyboard 0 and )
+#define K_1 0x001e // Keyboard 1 and !
+#define K_2 0x001f // Keyboard 2 and @
+#define K_3 0x0020 // Keyboard 3 and #
+#define K_4 0x0021 // Keyboard 4 and $
+#define K_5 0x0022 // Keyboard 5 and %
+#define K_6 0x0023 // Keyboard 6 and ^
+#define K_7 0x0024 // Keyboard 7 and &
+#define K_8 0x0025 // Keyboard 8 and *
+#define K_9 0x0026 // Keyboard 9 and (
+#define K_0 0x0027 // Keyboard 0 and )
 
-#define KEY_ENTER 0x28 // Keyboard Return (ENTER)
-#define KEY_ESC 0x29 // Keyboard ESCAPE
-#define KEY_BACKSPACE 0x2a // Keyboard DELETE (Backspace)
-#define KEY_TAB 0x2b // Keyboard Tab
-#define KEY_SPACE 0x2c // Keyboard Spacebar
-#define KEY_MINUS 0x2d // Keyboard - and _
-#define KEY_EQUAL 0x2e // Keyboard = and +
-#define KEY_LEFTBRACE 0x2f // Keyboard [ and {
-#define KEY_RIGHTBRACE 0x30 // Keyboard ] and }
-#define KEY_BACKSLASH 0x31 // Keyboard \ and |
-#define KEY_HASHTILDE 0x32 // Keyboard Non-US # and ~
-#define KEY_SEMICOLON 0x33 // Keyboard ; and :
-#define KEY_APOSTROPHE 0x34 // Keyboard ' and "
-#define KEY_GRAVE 0x35 // Keyboard ` and ~
-#define KEY_COMMA 0x36 // Keyboard , and <
-#define KEY_DOT 0x37 // Keyboard . and >
-#define KEY_SLASH 0x38 // Keyboard / and ?
-#define KEY_CAPSLOCK 0x39 // Keyboard Caps Lock
+#define K_ENTER 0x0028 // Keyboard Return (ENTER)
+#define K_ESC 0x0029 // Keyboard ESCAPE
+#define K_BACKSPACE 0x002a // Keyboard DELETE (Backspace)
+#define K_TAB 0x002b // Keyboard Tab
+#define K_SPACE 0x002c // Keyboard Spacebar
+#define K_MINUS 0x002d // Keyboard - and _
+#define K_EQUAL 0x002e // Keyboard = and +
+#define K_LEFTBRACE 0x002f // Keyboard [ and {
+#define K_RIGHTBRACE 0x0030 // Keyboard ] and }
+#define K_BACKSLASH 0x0031 // Keyboard \ and |
+#define K_HASHTILDE 0x0032 // Keyboard Non-US # and ~
+#define K_SEMICOLON 0x0033 // Keyboard ; and :
+#define K_APOSTROPHE 0x0034 // Keyboard ' and "
+#define K_GRAVE 0x0035 // Keyboard ` and ~
+#define K_COMMA 0x0036 // Keyboard , and <
+#define K_DOT 0x0037 // Keyboard . and >
+#define K_SLASH 0x0038 // Keyboard / and ?
+#define K_CAPSLOCK 0x0039 // Keyboard Caps Lock
 
-#define KEY_F1 0x3a // Keyboard F1
-#define KEY_F2 0x3b // Keyboard F2
-#define KEY_F3 0x3c // Keyboard F3
-#define KEY_F4 0x3d // Keyboard F4
-#define KEY_F5 0x3e // Keyboard F5
-#define KEY_F6 0x3f // Keyboard F6
-#define KEY_F7 0x40 // Keyboard F7
-#define KEY_F8 0x41 // Keyboard F8
-#define KEY_F9 0x42 // Keyboard F9
-#define KEY_F10 0x43 // Keyboard F10
-#define KEY_F11 0x44 // Keyboard F11
-#define KEY_F12 0x45 // Keyboard F12
+#define K_F1 0x003a // Keyboard F1
+#define K_F2 0x003b // Keyboard F2
+#define K_F3 0x003c // Keyboard F3
+#define K_F4 0x003d // Keyboard F4
+#define K_F5 0x003e // Keyboard F5
+#define K_F6 0x003f // Keyboard F6
+#define K_F7 0x0040 // Keyboard F7
+#define K_F8 0x0041 // Keyboard F8
+#define K_F9 0x0042 // Keyboard F9
+#define K_F10 0x0043 // Keyboard F10
+#define K_F11 0x0044 // Keyboard F11
+#define K_F12 0x0045 // Keyboard F12
 
-#define KEY_SYSRQ 0x46 // Keyboard Print Screen
-#define KEY_SCROLLLOCK 0x47 // Keyboard Scroll Lock
-#define KEY_PAUSE 0x48 // Keyboard Pause
-#define KEY_INSERT 0x49 // Keyboard Insert
-#define KEY_HOME 0x4a // Keyboard Home
-#define KEY_PAGEUP 0x4b // Keyboard Page Up
-#define KEY_DELETE 0x4c // Keyboard Delete Forward
-#define KEY_END 0x4d // Keyboard End
-#define KEY_PAGEDOWN 0x4e // Keyboard Page Down
-#define KEY_RIGHT 0x4f // Keyboard Right Arrow
-#define KEY_LEFT 0x50 // Keyboard Left Arrow
-#define KEY_DOWN 0x51 // Keyboard Down Arrow
-#define KEY_UP 0x52 // Keyboard Up Arrow
+#define K_SYSRQ 0x0046 // Keyboard Print Screen
+#define K_SCROLLLOCK 0x0047 // Keyboard Scroll Lock
+#define K_PAUSE 0x0048 // Keyboard Pause
+#define K_INSERT 0x0049 // Keyboard Insert
+#define K_HOME 0x004a // Keyboard Home
+#define K_PAGEUP 0x004b // Keyboard Page Up
+#define K_DELETE 0x004c // Keyboard Delete Forward
+#define K_END 0x004d // Keyboard End
+#define K_PAGEDOWN 0x004e // Keyboard Page Down
+#define K_RIGHT 0x004f // Keyboard Right Arrow
+#define K_LEFT 0x0050 // Keyboard Left Arrow
+#define K_DOWN 0x0051 // Keyboard Down Arrow
+#define K_UP 0x0052 // Keyboard Up Arrow
 
-#define KEY_PROGRAM 0x00    // Kinesis progm key
-#define KEY_KEYPAD 0x00     // Kinesis keypad key
+#define K_PROGRAM 0x0000    // Kinesis progm key
+#define K_KEYPAD 0x0000     // Kinesis keypad key
 
 // Kinesis Left Thumb Keys
-#define KEY_SL1 (KEY_EQUAL)
-#define KEY_SL2 (KEY_MOD_LCTRL)
-#define KEY_SL3 (KEY_TAB)
-#define KEY_SL4 (KEY_BACKSPACE)
-#define KEY_SL5 (KEY_MOD_LALT)
-#define KEY_SL6 (KEY_MOD_LMETA)
+#define K_SL1 (K_EQUAL)
+#define K_SL2 (K_MOD_LCTRL)
+#define K_SL3 (K_TAB)
+#define K_SL4 (K_BACKSPACE)
+#define K_SL5 (K_MOD_LALT)
+#define K_SL6 (K_MOD_LMETA)
 
 // Kinesis Right Thumb Keys
-#define KEY_SR1 (KEY_MINUS)
-#define KEY_SR2 (KEY_MOD_RALT)
-#define KEY_SR3 (KEY_ENTER)
-#define KEY_SR4 (KEY_SPACE)
-#define KEY_SR5 (KEY_MOD_RCTRL)
-#define KEY_SR6 (KEY_MOD_RMETA)
+#define K_SR1 (K_MINUS)
+#define K_SR2 (K_MOD_RALT)
+#define K_SR3 (K_ENTER)
+#define K_SR4 (K_SPACE)
+#define K_SR5 (K_MOD_RCTRL)
+#define K_SR6 (K_MOD_RMETA)
 
 #endif //KEYCODES_H
