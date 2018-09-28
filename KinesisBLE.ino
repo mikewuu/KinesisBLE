@@ -6,6 +6,7 @@
 #include "keymap.h"
 #include "bluetooth.h"
 #include "battery.h"
+#include "button.h"
 #include "Adafruit_MCP23017.h"
 
 #define ROWS 15
@@ -88,6 +89,22 @@ void loop(void) {
     digitalWrite(LED_KEY_PIN, LOW);
    }
 
+   /**
+    * Power Button LED
+    */
+    int UsbMv = readUSB();
+
+    if(UsbMv < 1000) {
+      buttonColor(BLUE);                        // USB NOT CONNECTED
+    } else {
+      if(UsbMv >= 5000) {
+        buttonColor(GREEN);                     // FULL
+      } else {
+        buttonColor(ORANGE);                    // CHARGING
+      }
+    }
+    
+   
   for (uint8_t row = 0; row < ROWS; row++) {
     
     uint8_t row_read = 0;
