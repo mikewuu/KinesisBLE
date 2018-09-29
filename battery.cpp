@@ -2,8 +2,8 @@
 #include "config.h"
 #include "battery.h"
 
-uint8_t lastReportedBatteryPercentage = 0;
-uint8_t lastReportTime = -10001;                                                    // Checkbattery every 10 seconds
+int lastReportedBatteryPercentage = 0;
+int lastReportTime = -10001;                                                    // Checkbattery every 10 seconds
 
 int readVBAT(void) {
   int raw;
@@ -60,8 +60,9 @@ uint8_t mvToPercent(float mvolts) {
 
 uint8_t batteryPercentage(void) {
 
-  int runtime = millis();
-  if(runtime - lastReportTime > 10000){
+  int runtime = millis(); 
+  
+  if( (runtime - lastReportTime) > 10000){
     int vbat_raw = readVBAT();
     lastReportedBatteryPercentage = mvToPercent(vbat_raw * MV_PER_LSB);
     lastReportTime = runtime;
