@@ -67,7 +67,7 @@ void init_bluetooth() {
   Bluefruit.begin();
   Bluefruit.setName("Kinesis BLE");
   Bluefruit.setTxPower(-4);
-  
+  Bluefruit.autoConnLed(false);                                 // turn off Blue LED
 
   bledis.setManufacturer("mike wu");
   bledis.setModel("Kinesis Advantage 2");

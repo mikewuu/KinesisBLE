@@ -66,7 +66,6 @@ uint8_t batteryPercentage(void) {
     int vbat_raw = readVBAT();
     lastReportedBatteryPercentage = mvToPercent(vbat_raw * MV_PER_LSB);
     lastReportTime = runtime;
-    Serial.println(lastReportedBatteryPercentage);
   } 
 
   return lastReportedBatteryPercentage;

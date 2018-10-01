@@ -25,6 +25,10 @@ void setup() {
   mcp.begin();      // use default address 0
   mcp.pinMode(8, OUTPUT);
   mcp.digitalWrite(8, HIGH);
+
+  Serial.begin(115200);
+
+  Serial.print("finish setup");
 }
 
 
@@ -50,4 +54,6 @@ void loop() {
   {
     NRF_POWER->SYSTEMOFF = 1;
   }
+
+
 }

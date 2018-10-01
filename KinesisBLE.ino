@@ -31,7 +31,24 @@ const int baudrate = 115200;
 
 Adafruit_MCP23017 mcp;
 
+/**
+ * Battery LED on time
+ */
+bool  batteryLedOn = false; 
+int   batteryLedTimer = 0;
+int   batteryOnTime = 900000;             // Keep battery LEDs on for 5 minutes each time.
+
+/**
+ * Timestamp of last key press activity. Used to
+ * check if keyboard can go into deep-sleep.
+ */
+int lastKeyActivityTimer = 0;
+int idleBeforeSleepTime = 60000;                   // 15 minutes
+
 void setup(void) {
+
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
 
   mcp.begin();
 
@@ -56,39 +73,18 @@ void setup(void) {
   pinMode(LED_NUM_PIN, OUTPUT);
   pinMode(LED_SCR_PIN, OUTPUT);
   pinMode(LED_KEY_PIN, OUTPUT);
-}
 
+  showBatteryLevel();
+}
 
 
 void loop(void) {
 
-  /**
-   * Read battery and update Kinesis LEDs
-   * 
-   */
-   uint8_t battery = batteryPercentage();
-   if(battery > 75) {
-    digitalWrite(LED_CAPS_PIN, HIGH);
-    digitalWrite(LED_NUM_PIN, HIGH);
-    digitalWrite(LED_SCR_PIN, HIGH);
-    digitalWrite(LED_KEY_PIN, HIGH);
-   } else if (battery > 50) {
-    digitalWrite(LED_CAPS_PIN, HIGH);
-    digitalWrite(LED_NUM_PIN, HIGH);
-    digitalWrite(LED_SCR_PIN, HIGH);
-    digitalWrite(LED_KEY_PIN, LOW);
-   } else if (battery > 25) {
-    digitalWrite(LED_CAPS_PIN, HIGH);
-    digitalWrite(LED_NUM_PIN, HIGH);
-    digitalWrite(LED_SCR_PIN, LOW);
-    digitalWrite(LED_KEY_PIN, LOW);
-   } else {
-    digitalWrite(LED_CAPS_PIN, HIGH);
-    digitalWrite(LED_NUM_PIN, LOW);
-    digitalWrite(LED_SCR_PIN, LOW);
-    digitalWrite(LED_KEY_PIN, LOW);
-   }
-
+  if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
+    turnOffBatteryLed();
+  }
+   
+    
    /**
     * Power Button LED
     */
@@ -135,7 +131,6 @@ void loop(void) {
         
       }
     }
-
 
     /**
      * Set Debouncing Delay
@@ -197,10 +192,93 @@ void loop(void) {
       if (curr != prev) {
         handle_keychange(row, col, curr);
         prev_states[row] ^= (uint16_t)1 << col;
-        goto END_OF_LOOP;                                                           // Handle 1 key change at a time
+        lastKeyActivityTimer = millis();                    // Update last activity timer to prevent sleep
+        goto END_OF_LOOP;                                   // Handle 1 key change at a time
       }
     }
+    
   }
 
   END_OF_LOOP:;
+
+  if( (millis() - lastKeyActivityTimer) > idleBeforeSleepTime) {
+    keyboardShutdown();
+  }
+
+  waitForEvent();
+  
 }
+
+/**
+ * Read battery and update Kinesis LEDs
+ * 
+ */
+void showBatteryLevel() {
+   uint8_t battery = batteryPercentage();
+   if(battery > 75) {
+    digitalWrite(LED_CAPS_PIN, HIGH);
+    digitalWrite(LED_NUM_PIN, HIGH);
+    digitalWrite(LED_SCR_PIN, HIGH);
+    digitalWrite(LED_KEY_PIN, HIGH);
+   } else if (battery > 50) {
+    digitalWrite(LED_CAPS_PIN, HIGH);
+    digitalWrite(LED_NUM_PIN, HIGH);
+    digitalWrite(LED_SCR_PIN, HIGH);
+    digitalWrite(LED_KEY_PIN, LOW);
+   } else if (battery > 25) {
+    digitalWrite(LED_CAPS_PIN, HIGH);
+    digitalWrite(LED_NUM_PIN, HIGH);
+    digitalWrite(LED_SCR_PIN, LOW);
+    digitalWrite(LED_KEY_PIN, LOW);
+   } else {
+    digitalWrite(LED_CAPS_PIN, HIGH);
+    digitalWrite(LED_NUM_PIN, LOW);
+    digitalWrite(LED_SCR_PIN, LOW);
+    digitalWrite(LED_KEY_PIN, LOW);
+   }
+   batteryLedOn = true;
+   batteryLedTimer = millis();
+}
+
+/**
+ * Turns off all battery level
+ * indicator LEDs.
+ */
+void turnOffBatteryLed() {
+    digitalWrite(LED_CAPS_PIN, LOW);
+    digitalWrite(LED_NUM_PIN, LOW);
+    digitalWrite(LED_SCR_PIN, LOW);
+    digitalWrite(LED_KEY_PIN, LOW);
+}
+
+/**
+ * Deep-sleep (max power saving)
+ * Enter this mode if keyboard has been idle for
+ * some time.
+ */
+void keyboardShutdown() {
+
+  digitalWrite(LED_BUILTIN, LOW);
+  buttonColor(OFF);       // Power button LED
+  turnOffBatteryLed();    // Battery indicator LEDs
+  
+  
+  // Loop through columns and pull them down
+  for (uint8_t col = 0; col < COLS; col++) {
+    pinMode(col_pins[col], INPUT_PULLDOWN);
+    NRF_GPIO->PIN_CNF[col_pins[col]] |= ((uint32_t) GPIO_PIN_CNF_SENSE_High << GPIO_PIN_CNF_SENSE_Pos);
+  }
+
+  uint8_t sd_en;
+  (void) sd_softdevice_is_enabled(&sd_en);
+
+  // Enter System OFF state
+  if ( sd_en )
+  {
+    sd_power_system_off();
+  }else
+  {
+    NRF_POWER->SYSTEMOFF = 1;
+  }
+}
+
