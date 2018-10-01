@@ -47,9 +47,6 @@ int idleBeforeSleepTime = 60000;                   // 15 minutes
 
 void setup(void) {
 
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
-
   mcp.begin();
 
   Serial.begin(baudrate);
@@ -258,7 +255,6 @@ void turnOffBatteryLed() {
  */
 void keyboardShutdown() {
 
-  digitalWrite(LED_BUILTIN, LOW);
   buttonColor(OFF);       // Power button LED
   turnOffBatteryLed();    // Battery indicator LEDs
   
