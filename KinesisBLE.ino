@@ -67,7 +67,6 @@ void loop(void) {
    * 
    */
    uint8_t battery = batteryPercentage();
-//   Serial.println(battery);
    if(battery > 75) {
     digitalWrite(LED_CAPS_PIN, HIGH);
     digitalWrite(LED_NUM_PIN, HIGH);
