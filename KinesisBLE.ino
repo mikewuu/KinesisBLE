@@ -12,7 +12,7 @@
 #define ROWS 15
 #define COLS 7
 
-#define DEBOUNCING_DELAY 10
+#define DEBOUNCING_DELAY 1
 
 uint8_t col_pins[COLS] = COL_PINS;
 uint8_t row_pins[ROWS] = ROW_PINS;
