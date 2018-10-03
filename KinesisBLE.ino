@@ -12,7 +12,12 @@
 #define ROWS 15
 #define COLS 7
 
-#define DEBOUNCING_DELAY 1
+/**
+ * Only debouncing once because each iteration already 
+ * takes roughly 8ms due to nRF52 max 
+ * i2C speed of 400khz.
+ */
+#define DEBOUNCING_DELAY 2
 
 uint8_t col_pins[COLS] = COL_PINS;
 uint8_t row_pins[ROWS] = ROW_PINS;
@@ -20,6 +25,7 @@ uint8_t row_pins[ROWS] = ROW_PINS;
 uint8_t prev_states[ROWS] = { 0 };
 uint8_t curr_states[ROWS] = { 0 };
 uint8_t temp_states[ROWS] = { 0 };
+
 uint8_t debouncing = DEBOUNCING_DELAY;
 
 inline
@@ -36,18 +42,19 @@ Adafruit_MCP23017 mcp;
  */
 bool  batteryLedOn = false; 
 int   batteryLedTimer = 0;
-int   batteryOnTime = 900000;             // Keep battery LEDs on for 5 minutes each time.
+int   batteryOnTime = 300000;                       // Keep battery LEDs on for 5 minutes each time.
 
 /**
  * Timestamp of last key press activity. Used to
  * check if keyboard can go into deep-sleep.
  */
 int lastKeyActivityTimer = 0;
-int idleBeforeSleepTime = 60000;                   // 15 minutes
+int idleBeforeSleepTime = 900000;                   // 15 minutes
 
 void setup(void) {
 
   mcp.begin();
+  Wire.setClock(400000L);                           // Manually set high speed i2c
 
   Serial.begin(baudrate);
   
@@ -63,31 +70,28 @@ void setup(void) {
     digitalWrite(col_pins[col], HIGH);
   }
 
-
-//  Serial.print("Ready");
-
   pinMode(LED_CAPS_PIN, OUTPUT);
   pinMode(LED_NUM_PIN, OUTPUT);
   pinMode(LED_SCR_PIN, OUTPUT);
   pinMode(LED_KEY_PIN, OUTPUT);
-
+  
   showBatteryLevel();
 }
 
+int loopStart = 0;
 
 void loop(void) {
 
-  if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
-    turnOffBatteryLed();
-  }
-   
+//  if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
+//    turnOffBatteryLed();
+//  }
     
    /**
     * Power Button LED
     */
     int UsbMv = readUSB();
 
-    if(UsbMv < 1000) {
+    if(UsbMv < 2000) {
       buttonColor(BLUE);                        // USB NOT CONNECTED
     } else {
       if(UsbMv >= 5000) {
@@ -200,10 +204,10 @@ void loop(void) {
 
   if( (millis() - lastKeyActivityTimer) > idleBeforeSleepTime) {
     keyboardShutdown();
+  } else {
+    waitForEvent();
   }
-
-  waitForEvent();
-  
+ 
 }
 
 /**
@@ -211,7 +215,11 @@ void loop(void) {
  * 
  */
 void showBatteryLevel() {
+  
    uint8_t battery = batteryPercentage();
+
+   Serial.println(battery);
+   
    if(battery > 75) {
     digitalWrite(LED_CAPS_PIN, HIGH);
     digitalWrite(LED_NUM_PIN, HIGH);
@@ -258,11 +266,12 @@ void keyboardShutdown() {
   buttonColor(OFF);       // Power button LED
   turnOffBatteryLed();    // Battery indicator LEDs
   
+  for (uint8_t row = 0; row < ROWS; row++) {
+    mcp.digitalWrite(row_pins[row], LOW);    
+  }
   
-  // Loop through columns and pull them down
   for (uint8_t col = 0; col < COLS; col++) {
-    pinMode(col_pins[col], INPUT_PULLDOWN);
-    NRF_GPIO->PIN_CNF[col_pins[col]] |= ((uint32_t) GPIO_PIN_CNF_SENSE_High << GPIO_PIN_CNF_SENSE_Pos);
+    NRF_GPIO->PIN_CNF[col_pins[col]] |= ((uint32_t) GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
   }
 
   uint8_t sd_en;
