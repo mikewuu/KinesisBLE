@@ -305,7 +305,7 @@ void batteryChargingAnimation() {
 
    int now = millis();
    
-   if ( (millis() - chargingAnimationLastToggle) < 800) {
+   if ( (millis() - chargingAnimationLastToggle) < 700) {
     return;
    }
 
