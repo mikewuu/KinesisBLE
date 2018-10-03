@@ -51,6 +51,9 @@ int   batteryOnTime = 300000;                       // Keep battery LEDs on for 
 int lastKeyActivityTimer = 0;
 int idleBeforeSleepTime = 900000;                   // 15 minutes
 
+bool  chargingAnimationOn = false;
+int   chargingAnimationLastToggle = 0;
+
 void setup(void) {
 
   mcp.begin();
@@ -81,24 +84,37 @@ void setup(void) {
 int loopStart = 0;
 
 void loop(void) {
-
-//  if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
-//    turnOffBatteryLed();
-//  }
     
-   /**
-    * Power Button LED
-    */
     int UsbMv = readUSB();
 
     if(UsbMv < 2000) {
-      buttonColor(BLUE);                        // USB NOT CONNECTED
+      
+      /**
+       * USB not connected
+       * - Blue power button LED
+       * - Turn off battery indicator to save power
+       */
+       
+      buttonColor(BLUE);
+
+      if ((millis() - chargingAnimationLastToggle) < 100) {
+        showBatteryLevel();
+      }
+                              
+      if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
+        setAllBatteryLed(LOW);
+      }
+      
     } else {
+      
       if(UsbMv >= 5000) {
         buttonColor(GREEN);                     // FULL
+        setAllBatteryLed(HIGH);
       } else {
         buttonColor(ORANGE);                    // CHARGING
+        batteryChargingAnimation();
       }
+      
     }
     
    
@@ -249,11 +265,11 @@ void showBatteryLevel() {
  * Turns off all battery level
  * indicator LEDs.
  */
-void turnOffBatteryLed() {
-    digitalWrite(LED_CAPS_PIN, LOW);
-    digitalWrite(LED_NUM_PIN, LOW);
-    digitalWrite(LED_SCR_PIN, LOW);
-    digitalWrite(LED_KEY_PIN, LOW);
+void setAllBatteryLed(bool state) {
+    digitalWrite(LED_CAPS_PIN, state);
+    digitalWrite(LED_NUM_PIN, state);
+    digitalWrite(LED_SCR_PIN, state);
+    digitalWrite(LED_KEY_PIN, state);
 }
 
 /**
@@ -264,7 +280,7 @@ void turnOffBatteryLed() {
 void keyboardShutdown() {
 
   buttonColor(OFF);       // Power button LED
-  turnOffBatteryLed();    // Battery indicator LEDs
+  setAllBatteryLed(LOW);    // Battery indicator LEDs
   
   for (uint8_t row = 0; row < ROWS; row++) {
     mcp.digitalWrite(row_pins[row], LOW);    
@@ -285,5 +301,63 @@ void keyboardShutdown() {
   {
     NRF_POWER->SYSTEMOFF = 1;
   }
+}
+
+void batteryChargingAnimation() {
+   uint8_t battery = batteryPercentage();
+
+   int now = millis();
+   
+   if ( (millis() - chargingAnimationLastToggle) < 800) {
+    return;
+   }
+
+   chargingAnimationLastToggle = now;
+   
+   if(battery > 75) {
+    digitalWrite(LED_CAPS_PIN, HIGH);
+    digitalWrite(LED_NUM_PIN, HIGH);
+    digitalWrite(LED_SCR_PIN, HIGH);
+    if (chargingAnimationOn) {
+      digitalWrite(LED_KEY_PIN, HIGH);
+      chargingAnimationOn = false;
+    } else {
+      digitalWrite(LED_KEY_PIN, LOW);
+      chargingAnimationOn = true;
+    }
+   } else if (battery > 50) {
+    digitalWrite(LED_CAPS_PIN, HIGH);
+    digitalWrite(LED_NUM_PIN, HIGH);
+    if (chargingAnimationOn) {
+      digitalWrite(LED_SCR_PIN, HIGH);
+      chargingAnimationOn = false;
+    } else {
+      digitalWrite(LED_SCR_PIN, LOW);
+      chargingAnimationOn = true;
+    }
+    digitalWrite(LED_KEY_PIN, LOW);
+   } else if (battery > 25) {
+    digitalWrite(LED_CAPS_PIN, HIGH);
+    if (chargingAnimationOn) {
+      digitalWrite(LED_NUM_PIN, HIGH);
+      chargingAnimationOn = false;
+    } else {
+      digitalWrite(LED_NUM_PIN, LOW);
+      chargingAnimationOn = true;
+    }
+    digitalWrite(LED_SCR_PIN, LOW);
+    digitalWrite(LED_KEY_PIN, LOW);
+   } else {
+    if (chargingAnimationOn) {
+      digitalWrite(LED_CAPS_PIN, HIGH);
+      chargingAnimationOn = false;
+    } else {
+      digitalWrite(LED_CAPS_PIN, LOW);
+      chargingAnimationOn = true;
+    }    
+    digitalWrite(LED_NUM_PIN, LOW);
+    digitalWrite(LED_SCR_PIN, LOW);
+    digitalWrite(LED_KEY_PIN, LOW);
+   }
 }
 
