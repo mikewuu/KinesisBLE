@@ -81,26 +81,24 @@ void setup(void) {
   showBatteryLevel();
 }
 
-int loopStart = 0;
+bool charging = false;
 
 void loop(void) {
     
     int UsbMv = readUSB();
 
+    // USB not connected
     if(UsbMv < 2000) {
-      
-      /**
-       * USB not connected
-       * - Blue power button LED
-       * - Turn off battery indicator to save power
-       */
-       
+
       buttonColor(BLUE);
 
-      if ((millis() - chargingAnimationLastToggle) < 100) {
+      // Set battery LED to what it would be without charging animation
+      if (charging) {
         showBatteryLevel();
+        charging = false;
       }
-                              
+
+      // Turn off battery indicator LEDs after set time
       if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
         setAllBatteryLed(LOW);
       }
@@ -113,6 +111,7 @@ void loop(void) {
       } else {
         buttonColor(ORANGE);                    // CHARGING
         batteryChargingAnimation();
+        charging = true;
       }
       
     }
@@ -233,8 +232,6 @@ void loop(void) {
 void showBatteryLevel() {
   
    uint8_t battery = batteryPercentage();
-
-   Serial.println(battery);
    
    if(battery > 75) {
     digitalWrite(LED_CAPS_PIN, HIGH);
