@@ -29,7 +29,7 @@
 #define MINS_SHOW_BATTERY_LED 5
 
 #define USB_BAUDRATE 115200
-#define USB_FULL_MIN_MV 4278  // Used to determine if battery is charging.
+#define USB_FULL_MIN_MV 4978  // Used to determine if battery is charging.
 
 uint8_t col_pins[COLS] = COL_PINS;
 uint8_t row_pins[ROWS] = ROW_PINS;
@@ -95,29 +95,29 @@ bool charging = false;
 
 void loop(void) {
   
-    if(usbConnected()){
-      if(usbVoltage() > USB_FULL_MIN_MV) {
-        buttonColor(GREEN);                     // FULL
-        setAllBatteryLed(HIGH);
-      } else {
-        buttonColor(ORANGE);                    // CHARGING
-        batteryChargingAnimation();
-        charging = true;
-      }
+  if(usbConnected()){
+    if(usbVoltage() > USB_FULL_MIN_MV) {
+      buttonColor(GREEN);                     // FULL
+      setAllBatteryLed(HIGH);
     } else {
-      buttonColor(BLUE);
-
-      // Set battery LED to what it would be without charging animation
-      if (charging) {
-        showBatteryLevel();
-        charging = false;
-      }
-
-      // Turn off battery indicator LEDs after set time
-      if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
-        setAllBatteryLed(LOW);
-      }
+      buttonColor(ORANGE);                    // CHARGING
+      batteryChargingAnimation();
+      charging = true;
     }
+  } else {
+    buttonColor(BLUE);
+
+    // Set battery LED to what it would be without charging animation
+    if (charging) {
+      showBatteryLevel();
+      charging = false;
+    }
+
+    // Turn off battery indicator LEDs after set time
+    if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
+      setAllBatteryLed(LOW);
+    }
+  }
 
     
   for (uint8_t row = 0; row < ROWS; row++) {

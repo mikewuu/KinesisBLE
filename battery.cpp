@@ -99,6 +99,10 @@ int usbVoltage(void) {
   if(readUsbIndex >= numUsbVoltageReadings) {
     readUsbIndex = 0;
   }
+
+  if(totalUsbMv < numUsbVoltageReadings * 4000) {
+    return 0;
+  }
   
   return totalUsbMv / numUsbVoltageReadings;
 }
