@@ -1,10 +1,7 @@
 #include <Arduino.h>
 #include "config.h"
 #include "battery.h"
-
-int lastReportedBatteryPercentage = 0;
-int lastReportTime = -10001;                                                    // Checkbattery every 10 seconds
-
+                                        
 int readVBAT(void) {
   int raw;
 
@@ -59,36 +56,18 @@ uint8_t mvToPercent(float mvolts) {
 }
 
 uint8_t batteryPercentage(void) {
-
-  int runtime = millis(); 
-  
-  if( (runtime - lastReportTime) > 10000){
-    int vbat_raw = readVBAT();
-    lastReportedBatteryPercentage = mvToPercent(vbat_raw * MV_PER_LSB);
-    lastReportTime = runtime;
-  } 
-
-  return lastReportedBatteryPercentage;
+  int vbat_raw = readVBAT();
+  return mvToPercent(vbat_raw * MV_PER_LSB);
 }
 
-int readUSB(void) {
-  // Set the analog reference to 3.0V (default = 3.6V)
-  // ie. 0 = 0v and max resolution = 3v
-  analogReference(AR_INTERNAL_3_0);
-  // Set the resolution to 12-bit (0..4095)
-  analogReadResolution(12);
-
-  int UsbRawMv = analogRead(USB_PIN) * MV_PER_LSB * 2;      // Used 10k resistors to divide voltage in 2.
-  
-  // ADC needs to settle - delay for stability
-  delay(1);
-
-  // Set ADC back to defaults
-  analogReference(AR_DEFAULT);
-  analogReadResolution(10);
-
-  return round(UsbRawMv / 10) * 10;
+bool usbConnected(void) {
+  return digitalRead(USB_PIN);
 }
 
+int batteryMv(void) {
+  float vbat_raw = readVBAT();
+  float batMv = vbat_raw * MV_PER_LSB * VBAT_DIVIDER_COMP;
+  return round((batMv/100)) * 100;
+}
 
 

@@ -73,6 +73,8 @@ void setup(void) {
     digitalWrite(col_pins[col], HIGH);
   }
 
+  pinMode(USB_PIN, INPUT);
+
   pinMode(LED_CAPS_PIN, OUTPUT);
   pinMode(LED_NUM_PIN, OUTPUT);
   pinMode(LED_SCR_PIN, OUTPUT);
@@ -84,12 +86,20 @@ void setup(void) {
 bool charging = false;
 
 void loop(void) {
-    
-    int UsbMv = readUSB();
 
-    // USB not connected
-    if(UsbMv < 2000) {
+    if(usbConnected()){
 
+      int roundedBatteryVoltage = batteryMv();
+      
+      if(roundedBatteryVoltage == 4200) {
+        buttonColor(GREEN);                     // FULL
+        setAllBatteryLed(HIGH);
+      } else {
+        buttonColor(ORANGE);                    // CHARGING
+        batteryChargingAnimation();
+        charging = true;
+      }
+    } else {
       buttonColor(BLUE);
 
       // Set battery LED to what it would be without charging animation
@@ -102,21 +112,9 @@ void loop(void) {
       if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
         setAllBatteryLed(LOW);
       }
-      
-    } else {
-      
-      if(UsbMv >= 5000) {
-        buttonColor(GREEN);                     // FULL
-        setAllBatteryLed(HIGH);
-      } else {
-        buttonColor(ORANGE);                    // CHARGING
-        batteryChargingAnimation();
-        charging = true;
-      }
-      
     }
+
     
-   
   for (uint8_t row = 0; row < ROWS; row++) {
     
     uint8_t row_read = 0;
