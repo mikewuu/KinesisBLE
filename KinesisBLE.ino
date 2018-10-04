@@ -9,6 +9,9 @@
 #include "button.h"
 #include "Adafruit_MCP23017.h"
 
+/**
+ * Keyboard Matrix
+ */
 #define ROWS 15
 #define COLS 7
 
@@ -18,6 +21,15 @@
  * i2C speed of 400khz.
  */
 #define DEBOUNCING_DELAY 2
+
+/**
+ * Power Consumption
+ */
+#define MINS_BEFORE_SHUTDOWN 15
+#define MINS_SHOW_BATTERY_LED 5
+
+#define USB_BAUDRATE 115200
+#define USB_FULL_MIN_MV 4278  // Used to determine if battery is charging.
 
 uint8_t col_pins[COLS] = COL_PINS;
 uint8_t row_pins[ROWS] = ROW_PINS;
@@ -33,33 +45,31 @@ state_t get_state(uint8_t row, uint8_t col) {
   return (curr_states[row] >> (col)) & 1;
 }
 
-const int baudrate = 115200;
-
-Adafruit_MCP23017 mcp;
-
 /**
  * Battery LED on time
  */
 bool  batteryLedOn = false; 
 int   batteryLedTimer = 0;
-int   batteryOnTime = 300000;                       // Keep battery LEDs on for 5 minutes each time.
+int   batteryOnTime = MINS_SHOW_BATTERY_LED*60*1000;                       
 
 /**
  * Timestamp of last key press activity. Used to
  * check if keyboard can go into deep-sleep.
  */
 int lastKeyActivityTimer = 0;
-int idleBeforeSleepTime = 900000;                   // 15 minutes
+int idleBeforeSleepTime = MINS_BEFORE_SHUTDOWN*60*1000;   
 
 bool  chargingAnimationOn = false;
 int   chargingAnimationLastToggle = 0;
 
+Adafruit_MCP23017 mcp;
+
 void setup(void) {
 
   mcp.begin();
-  Wire.setClock(400000L);                           // Manually set high speed i2c
+  Wire.setClock(400000L); // Manually set high (max nRf52) speed i2c
 
-  Serial.begin(baudrate);
+  Serial.begin(USB_BAUDRATE);
   
   init_bluetooth();
 
@@ -73,8 +83,6 @@ void setup(void) {
     digitalWrite(col_pins[col], HIGH);
   }
 
-  pinMode(USB_PIN, INPUT);
-
   pinMode(LED_CAPS_PIN, OUTPUT);
   pinMode(LED_NUM_PIN, OUTPUT);
   pinMode(LED_SCR_PIN, OUTPUT);
@@ -86,12 +94,9 @@ void setup(void) {
 bool charging = false;
 
 void loop(void) {
-
+  
     if(usbConnected()){
-
-      int roundedBatteryVoltage = batteryMv();
-      
-      if(roundedBatteryVoltage == 4200) {
+      if(usbVoltage() > USB_FULL_MIN_MV) {
         buttonColor(GREEN);                     // FULL
         setAllBatteryLed(HIGH);
       } else {

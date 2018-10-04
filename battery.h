@@ -6,8 +6,9 @@
 #define VBAT_DIVIDER      (0.71275837F)   // 2M + 0.806M voltage divider on VBAT = (2M / (0.806M + 2M))
 #define VBAT_DIVIDER_COMP (1.403F)        // Compensation factor for the VBAT divider, This is just 1 / VBAT_DIVIDER (above)
 
-uint8_t   batteryPercentage(); 
-int       batteryMv();
-bool      usbConnected();
+uint8_t batteryPercentage(); 
+int batteryMv();
+bool usbConnected();
+int usbVoltage();
 
 #endif //BATTERY_HUETOOTH_H

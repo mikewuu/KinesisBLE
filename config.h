@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 #define VBAT_PIN A7
-#define USB_PIN 30
+#define USB_PIN A6
 
 #define LED_CAPS_PIN    13   
 #define LED_NUM_PIN     14

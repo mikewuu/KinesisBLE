@@ -1,7 +1,18 @@
 #include <Arduino.h>
 #include "config.h"
 #include "battery.h"
-                                        
+
+/**
+ * Read USB running average voltage
+ * to determine if LIPO is full.
+ */
+const int numUsbVoltageReadings = 30;
+int usbReadings[numUsbVoltageReadings];
+int readUsbIndex = 0;
+int totalUsbMv = 0;
+int averageUsbMv = 0;
+ 
+                                       
 int readVBAT(void) {
   int raw;
 
@@ -12,7 +23,7 @@ int readVBAT(void) {
   analogReadResolution(12); // Can be 8, 10, 12 or 14
 
   // Let the ADC settle
-  delay(1);
+//  delay(1);
 
   // Get the raw 12-bit, 0..3000mV ADC value
   raw = analogRead(VBAT_PIN);
@@ -60,14 +71,36 @@ uint8_t batteryPercentage(void) {
   return mvToPercent(vbat_raw * MV_PER_LSB);
 }
 
+int usbRawVoltage(void) {
+  analogReference(AR_INTERNAL_3_0);
+  analogReadResolution(12); 
+  int UsbRawMv = analogRead(USB_PIN) * MV_PER_LSB * 2;  // Pair of 10k dividers
+  analogReference(AR_DEFAULT);
+  analogReadResolution(10);  
+  return UsbRawMv;
+}
+
 bool usbConnected(void) {
-  return digitalRead(USB_PIN);
+  return usbRawVoltage() > 2000;
 }
 
 int batteryMv(void) {
   float vbat_raw = readVBAT();
   float batMv = vbat_raw * MV_PER_LSB * VBAT_DIVIDER_COMP;
-  return round((batMv/100)) * 100;
+  return batMv;
+}
+
+int usbVoltage(void) {
+
+  totalUsbMv = totalUsbMv - usbReadings[readUsbIndex];
+  usbReadings[readUsbIndex] = usbRawVoltage();
+  totalUsbMv = totalUsbMv + usbReadings[readUsbIndex];
+  readUsbIndex += 1;
+  if(readUsbIndex >= numUsbVoltageReadings) {
+    readUsbIndex = 0;
+  }
+  
+  return totalUsbMv / numUsbVoltageReadings;
 }
 
 
