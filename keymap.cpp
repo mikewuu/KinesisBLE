@@ -87,14 +87,14 @@ const uint16_t PROGMEM layers[LAYERS][15][7] = {
     {______, ______, ______, ______, ______, ______, ______},
     {______, ______, ______, ______, ______, ______, ______}, 
     {______, ______, K_LEFT, ______, ______, ______, ______},
-    {______, K___UP, K_DOWN, ______, ______, ______, ______}, 
+    {______, K___UP, K_DOWN, ______, K_RSLA, ______, ______}, 
     {______, ______, K_RGHT, ______, ______, ______, ______},
-    {______, ______, ______, ______, ______, ______, ______}, 
+    {______, ______, ______, ______, K_RSRA, ______, ______}, 
     {______, ______, ______, ______, ______, ______, K_PGDN},
-    {______, ______, K_LBRC, ______, ______, ______, ______}, 
-    {______, ______, K_RBRC, ______, ______, ______, K_PGUP},
-    {______, ______, K_SCLN, ______, ______, ______, ______}, 
-    {______, ______, ______, K_APST, ______, ______, ______},
+    {______, K_RLPT, K_RLBK, K_RLBC, ______, ______, ______}, 
+    {______, K_RRPT, K_RRBK, K_RRBC, ______, ______, K_PGUP},
+    {______, ______, K_SCLN, K_APST, ______, ______, ______}, 
+    {______, ______, ______, K_RQTE, ______, ______, ______},
     {______, ______, ______, ______, ______, ______, ______}, 
     {______, ______, ______, ______, ______, K__F12, ______},
     {______, ______, ______, ______, K__F10, ______, ______}, 
@@ -149,7 +149,89 @@ void handle_keychange(uint8_t row, uint8_t col, state_t state) {
       }
       break;
     }
+    case K_RSLA: {
+      // Select to end of line Left: CMD + Shift + Left Arrow
+      if (state == DOWN) {
+        register_keydown(K_LCMD);
+        register_keydown(K_LSFT);
+        register_keydown(K_LEFT);
+      } else {
+        register_keyup(K_LCMD);
+        register_keyup(K_LSFT);
+        register_keyup(K_LEFT);
+      }
+      break;
+    }
+    case K_RSRA: {
+      // Select to end of line Left: CMD + Shift + Right Arrow
+      if (state == DOWN) {
+        register_keydown(K_LCMD);
+        register_keydown(K_LSFT);
+        register_keydown(K_RGHT);
+      } else {
+        register_keyup(K_LCMD);
+        register_keyup(K_LSFT);
+        register_keyup(K_RGHT);
+      }
+      break;
+    }
+    case K_RLPT: {
+      // Left Paranthesis
+      if (state == DOWN) {
+        register_keydown(K_LSFT);
+        register_keydown(K____9);    
+      } else {
+        register_keyup(K_LSFT);
+        register_keyup(K____9);    
+      }
+      break;
+    }
+    case K_RRPT: {
+      // Right Paranthesis
+      if (state == DOWN) {
+        register_keydown(K_LSFT);
+        register_keydown(K____0);    
+      } else {
+        register_keyup(K_LSFT);
+        register_keyup(K____0);    
+      }
+      break;
+    }
+    case K_RRBC: {
+      // Right Brace
+      if (state == DOWN) {
+        register_keydown(K_LSFT);
+        register_keydown(K_RBRC);     
+      } else {
+        register_keyup(K_LSFT);
+        register_keyup(K_RBRC);     
+      }
+      break;
+    }
+    case K_RLBC: {
+      // Left Brace
+      if (state == DOWN) {
+        register_keydown(K_LSFT);
+        register_keydown(K_LBRC);     
+      } else {
+        register_keyup(K_LSFT);
+        register_keyup(K_LBRC);     
+      }
+      break;
+    }
+    case K_RQTE: {
+      // Quote key
+      if (state == DOWN) {
+        register_keydown(K_LSFT);
+        register_keydown(K_APST);     
+      } else {
+        register_keyup(K_LSFT);
+        register_keyup(K_APST);    
+      }
+      break;
+    }
     default: {
+      // Normal keycode
       if (state == DOWN) {
         register_keydown(keycode);
       } else {
