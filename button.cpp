@@ -21,7 +21,7 @@ void buttonColor(int color) {
       break;
     case GREEN: buttonRGB(0, 255, 0);
       break;
-    case BLUE: buttonRGB(0, 0, 80);                 // 80/255 * 1000 * (3.3-3)/49 = 1.92mA
+    case BLUE: buttonRGB(0, 0, 125);                 // 125/255 * 1000 * (3.3-3)/49 = ~ 2mA
       break;
     case BLUERED: buttonRGB(25, 0, 230);
       break;
