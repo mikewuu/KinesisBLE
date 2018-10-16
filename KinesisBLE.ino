@@ -69,7 +69,7 @@ void setup(void) {
   mcp.begin();
   Wire.setClock(400000L); // Manually set high (max nRf52) speed i2c
 
-  Serial.begin(USB_BAUDRATE);
+//  Serial.begin(USB_BAUDRATE);
   
   init_bluetooth();
 
