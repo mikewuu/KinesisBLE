@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
+#include <SPI.h> 
+#include "MCP23S17.h"
 
 #include "config.h"
 #include "keycodes.h"
@@ -62,14 +64,14 @@ int idleBeforeSleepTime = MINS_BEFORE_SHUTDOWN*60*1000;
 bool  chargingAnimationOn = false;
 int   chargingAnimationLastToggle = 0;
 
-Adafruit_MCP23017 mcp;
+MCP mcp(0, 29); 
 
 void setup(void) {
 
   mcp.begin();
   Wire.setClock(400000L); // Manually set high (max nRf52) speed i2c
 
-//  Serial.begin(USB_BAUDRATE);
+  Serial.begin(USB_BAUDRATE);
   
   init_bluetooth();
 
@@ -83,41 +85,46 @@ void setup(void) {
     digitalWrite(col_pins[col], HIGH);
   }
 
-  pinMode(LED_CAPS_PIN, OUTPUT);
-  pinMode(LED_NUM_PIN, OUTPUT);
-  pinMode(LED_SCR_PIN, OUTPUT);
-  pinMode(LED_KEY_PIN, OUTPUT);
-  
-  showBatteryLevel();
+//  pinMode(LED_CAPS_PIN, OUTPUT);
+//  pinMode(LED_NUM_PIN, OUTPUT);
+//  pinMode(LED_SCR_PIN, OUTPUT);
+//  pinMode(LED_KEY_PIN, OUTPUT);
+//  
+//  showBatteryLevel();  
+
+  NRF_UARTE0->ENABLE = 0;  //disable UART
+  NRF_TWIM1 ->ENABLE = 0; //disable TWI Master
+  NRF_TWIS1 ->ENABLE = 0; //disable TWI Slave
+  NRF_NFCT->TASKS_DISABLE = 1; //disable NFC, confirm this is the right way
 }
 
 bool charging = false;
 
 void loop(void) {
   
-  if(usbConnected()){
-    if(usbVoltage() > USB_FULL_MIN_MV) {
-      buttonColor(GREEN);                     // FULL
-      setAllBatteryLed(HIGH);
-    } else {
-      buttonColor(ORANGE);                    // CHARGING
-      batteryChargingAnimation();
-      charging = true;
-    }
-  } else {
-    buttonColor(BLUE);
-
-    // Set battery LED to what it would be without charging animation
-    if (charging) {
-      showBatteryLevel();
-      charging = false;
-    }
-
-    // Turn off battery indicator LEDs after set time
-    if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
-      setAllBatteryLed(LOW);
-    }
-  }
+//  if(usbConnected()){
+//    if(usbVoltage() > USB_FULL_MIN_MV) {
+//      buttonColor(GREEN);                     // FULL
+//      setAllBatteryLed(HIGH);
+//    } else {
+//      buttonColor(ORANGE);                    // CHARGING
+//      batteryChargingAnimation();
+//      charging = true;
+//    }
+//  } else {
+//    buttonColor(BLUE);
+//
+//    // Set battery LED to what it would be without charging animation
+//    if (charging) {
+//      showBatteryLevel();
+//      charging = false;
+//    }
+//
+//    // Turn off battery indicator LEDs after set time
+//    if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
+//      setAllBatteryLed(LOW);
+//    }
+//  }
 
     
   for (uint8_t row = 0; row < ROWS; row++) {
@@ -222,9 +229,9 @@ void loop(void) {
 
   if( (millis() - lastKeyActivityTimer) > idleBeforeSleepTime) {
     keyboardShutdown();
-  } else {
-    waitForEvent();
   }
+
+  delay(17);
  
 }
 
