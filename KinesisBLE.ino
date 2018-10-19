@@ -64,14 +64,14 @@ int idleBeforeSleepTime = MINS_BEFORE_SHUTDOWN*60*1000;
 bool  chargingAnimationOn = false;
 int   chargingAnimationLastToggle = 0;
 
-MCP mcp(0, 29); 
+MCP mcp(0, SPI_SS_PIN); 
 
 void setup(void) {
 
   mcp.begin();
   Wire.setClock(400000L); // Manually set high (max nRf52) speed i2c
 
-  Serial.begin(USB_BAUDRATE);
+//  Serial.begin(USB_BAUDRATE);
   
   init_bluetooth();
 
@@ -85,11 +85,11 @@ void setup(void) {
     digitalWrite(col_pins[col], HIGH);
   }
 
-//  pinMode(LED_CAPS_PIN, OUTPUT);
-//  pinMode(LED_NUM_PIN, OUTPUT);
-//  pinMode(LED_SCR_PIN, OUTPUT);
-//  pinMode(LED_KEY_PIN, OUTPUT);
-//  
+  pinMode(LED_CAPS_PIN, OUTPUT);
+  pinMode(LED_NUM_PIN, OUTPUT);
+  pinMode(LED_SCR_PIN, OUTPUT);
+  pinMode(LED_KEY_PIN, OUTPUT);
+
 //  showBatteryLevel();  
 
   NRF_UARTE0->ENABLE = 0;  //disable UART
@@ -101,7 +101,7 @@ void setup(void) {
 bool charging = false;
 
 void loop(void) {
-  
+
 //  if(usbConnected()){
 //    if(usbVoltage() > USB_FULL_MIN_MV) {
 //      buttonColor(GREEN);                     // FULL
