@@ -231,7 +231,7 @@ void loop(void) {
     keyboardShutdown();
   }
 
-  delay(17);
+  delay(14);
  
 }
 
