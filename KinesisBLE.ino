@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
+#include <SPI.h> 
+#include "MCP23S17.h"
 
 #include "config.h"
 #include "keycodes.h"
@@ -62,7 +64,7 @@ int idleBeforeSleepTime = MINS_BEFORE_SHUTDOWN*60*1000;
 bool  chargingAnimationOn = false;
 int   chargingAnimationLastToggle = 0;
 
-Adafruit_MCP23017 mcp;
+MCP mcp(0, SPI_SS_PIN); 
 
 void setup(void) {
 
@@ -87,14 +89,19 @@ void setup(void) {
   pinMode(LED_NUM_PIN, OUTPUT);
   pinMode(LED_SCR_PIN, OUTPUT);
   pinMode(LED_KEY_PIN, OUTPUT);
-  
-  showBatteryLevel();
+
+  showBatteryLevel();  
+
+  NRF_UARTE0->ENABLE = 0;  //disable UART
+  NRF_TWIM1 ->ENABLE = 0; //disable TWI Master
+  NRF_TWIS1 ->ENABLE = 0; //disable TWI Slave
+  NRF_NFCT->TASKS_DISABLE = 1; //disable NFC, confirm this is the right way
 }
 
 bool charging = false;
 
 void loop(void) {
-  
+
   if(usbConnected()){
     if(usbVoltage() > USB_FULL_MIN_MV) {
       buttonColor(GREEN);                     // FULL
@@ -222,9 +229,9 @@ void loop(void) {
 
   if( (millis() - lastKeyActivityTimer) > idleBeforeSleepTime) {
     keyboardShutdown();
-  } else {
-    waitForEvent();
   }
+
+  delay(17);
  
 }
 
@@ -232,8 +239,8 @@ void loop(void) {
  * Read battery and update Kinesis LEDs
  * 
  */
-void showBatteryLevel() {
-  
+void showBatteryLevel() { 
+
    uint8_t battery = batteryPercentage();
    
    if(battery > 75) {
