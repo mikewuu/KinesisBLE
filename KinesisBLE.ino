@@ -90,7 +90,7 @@ void setup(void) {
   pinMode(LED_SCR_PIN, OUTPUT);
   pinMode(LED_KEY_PIN, OUTPUT);
 
-//  showBatteryLevel();  
+  showBatteryLevel();  
 
   NRF_UARTE0->ENABLE = 0;  //disable UART
   NRF_TWIM1 ->ENABLE = 0; //disable TWI Master
@@ -102,29 +102,29 @@ bool charging = false;
 
 void loop(void) {
 
-//  if(usbConnected()){
-//    if(usbVoltage() > USB_FULL_MIN_MV) {
-//      buttonColor(GREEN);                     // FULL
-//      setAllBatteryLed(HIGH);
-//    } else {
-//      buttonColor(ORANGE);                    // CHARGING
-//      batteryChargingAnimation();
-//      charging = true;
-//    }
-//  } else {
-//    buttonColor(BLUE);
-//
-//    // Set battery LED to what it would be without charging animation
-//    if (charging) {
-//      showBatteryLevel();
-//      charging = false;
-//    }
-//
-//    // Turn off battery indicator LEDs after set time
-//    if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
-//      setAllBatteryLed(LOW);
-//    }
-//  }
+  if(usbConnected()){
+    if(usbVoltage() > USB_FULL_MIN_MV) {
+      buttonColor(GREEN);                     // FULL
+      setAllBatteryLed(HIGH);
+    } else {
+      buttonColor(ORANGE);                    // CHARGING
+      batteryChargingAnimation();
+      charging = true;
+    }
+  } else {
+    buttonColor(BLUE);
+
+    // Set battery LED to what it would be without charging animation
+    if (charging) {
+      showBatteryLevel();
+      charging = false;
+    }
+
+    // Turn off battery indicator LEDs after set time
+    if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
+      setAllBatteryLed(LOW);
+    }
+  }
 
     
   for (uint8_t row = 0; row < ROWS; row++) {
@@ -239,8 +239,8 @@ void loop(void) {
  * Read battery and update Kinesis LEDs
  * 
  */
-void showBatteryLevel() {
-  
+void showBatteryLevel() { 
+
    uint8_t battery = batteryPercentage();
    
    if(battery > 75) {
