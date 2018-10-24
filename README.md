@@ -2,7 +2,7 @@
 
 Custom Kinesis Controller with Wireless BLE based on the nRF52 chip.
 
-The master branch is using I2C / TWI. The most current build is the SPI branch.
+For i2c / TWI use the i2c branch with v2 (untested) / v1 board files.
 
 ## Many thanks to
 
