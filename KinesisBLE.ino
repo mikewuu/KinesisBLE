@@ -232,7 +232,7 @@ void loop(void) {
     keyboardShutdown();
   }
 
-  delay(14);
+  delay(7);
  
 }
 
