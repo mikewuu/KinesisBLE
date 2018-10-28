@@ -10,8 +10,8 @@ void buttonRGB(int red, int green, int blue)
     green = 255 - green;
     blue = 255 - blue;
   #endif
-  analogWrite(BUTTON_RED_PIN, red);
-  analogWrite(BUTTON_GREEN_PIN, green);
+//  analogWrite(BUTTON_RED_PIN, red);
+//  analogWrite(BUTTON_GREEN_PIN, green);
   analogWrite(BUTTON_BLUE_PIN, blue);  
 }
 

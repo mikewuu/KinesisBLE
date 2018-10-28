@@ -4,9 +4,9 @@
   /**
    * ON/OFF RGB Button
    */
-  #define BUTTON_RED_PIN    5
-  #define BUTTON_GREEN_PIN  28
-  #define BUTTON_BLUE_PIN   29
+//  #define BUTTON_RED_PIN    29
+//  #define BUTTON_GREEN_PIN  28
+  #define BUTTON_BLUE_PIN   5
   #define COMMON_ANODE
 
   /**

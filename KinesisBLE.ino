@@ -96,6 +96,8 @@ void setup(void) {
   NRF_TWIM1 ->ENABLE = 0; //disable TWI Master
   NRF_TWIS1 ->ENABLE = 0; //disable TWI Slave
   NRF_NFCT->TASKS_DISABLE = 1; //disable NFC, confirm this is the right way
+
+  buttonColor(BLUE);
 }
 
 bool charging = false;
@@ -104,15 +106,14 @@ void loop(void) {
 
   if(usbConnected()){
     if(usbVoltage() > USB_FULL_MIN_MV) {
-      buttonColor(GREEN);                     // FULL
+//      buttonColor(GREEN);                     // FULL
       setAllBatteryLed(HIGH);
     } else {
-      buttonColor(ORANGE);                    // CHARGING
+//      buttonColor(ORANGE);                    // CHARGING
       batteryChargingAnimation();
       charging = true;
     }
   } else {
-    buttonColor(BLUE);
 
     // Set battery LED to what it would be without charging animation
     if (charging) {
