@@ -4,6 +4,20 @@ Custom Kinesis Controller with Wireless BLE based on the nRF52 chip.
 
 For i2c / TWI use the i2c branch with v2 (untested) / v1 board files.
 
+If you're brave enough to try this, read the [project](https://hackaday.io/project/161578-wireless-ble-kinesis-advantage-custom-controller) first!
+
+The master branch will always be for the latest build.
+
+V4 (SPI, current) - Lost RGB on the power button in order to free up the TX/RX pins. This board is untested as I just cut the traces and re-soldered on my v3 board, but I used the same pins so the firmware works. If anybody gets one of these made, please let me know how you go.
+
+V3 (SPI) - This board still has RGB power led that shows yellow for charging / green when full. But suffers from battery drain from the serial chip (7mA).
+
+V2 (i2c) - Swapped pins from TX/RX but we're still using i2c (MCP23017) chip which isn't that fast and limits the power savings of the board (5-7mA).  
+
+V1 (i2c) - Uses TX/RX and suffers battery drain.
+
+
+
 ## Many thanks to
 
 - [Adafruit](https://www.adafruit.com/product/3406) - Awesome documentation, libs and support on the forums. Pointed me in the right direction more than once.
