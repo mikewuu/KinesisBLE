@@ -81,7 +81,7 @@ int usbRawVoltage(void) {
 }
 
 bool usbConnected(void) {
-  return digitalRead(USB_PIN) == HIGH;
+  return usbVoltage() > 1000;
 }
 
 int batteryMv(void) {

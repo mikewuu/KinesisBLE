@@ -85,17 +85,12 @@ void setup(void) {
     digitalWrite(col_pins[col], HIGH);
   }
 
-//  pinMode(LED_CAPS_PIN, OUTPUT);
-//  pinMode(LED_NUM_PIN, OUTPUT);
-//  pinMode(LED_SCR_PIN, OUTPUT);
-//  pinMode(LED_KEY_PIN, OUTPUT);
+  pinMode(LED_CAPS_PIN, OUTPUT);
+  pinMode(LED_NUM_PIN, OUTPUT);
+  pinMode(LED_SCR_PIN, OUTPUT);
+  pinMode(LED_KEY_PIN, OUTPUT);
    
-//  showBatteryLevel();  
-
-//  digitalWrite(LED_CAPS_PIN, LOW);
-//  digitalWrite(LED_NUM_PIN, LOW);
-//  digitalWrite(LED_SCR_PIN, LOW);
-//  digitalWrite(LED_KEY_PIN, LOW);
+  showBatteryLevel();  
 
   NRF_UARTE0->ENABLE = 0;  //disable UART
   NRF_TWIM1 ->ENABLE = 0; //disable TWI Master
@@ -104,7 +99,6 @@ void setup(void) {
 
   buttonColor(BLUE);
 
-//  pinMode(USB_PIN, INPUT);
 }
 
 bool charging = false;
@@ -114,28 +108,28 @@ int lastUsbCheck = 0;
 void loop(void) {
 
     
-//  if(usbConnected()){
-//    if(usbVoltage() > USB_FULL_MIN_MV) {
-////      buttonColor(GREEN);                     // FULL
-//      setAllBatteryLed(HIGH);
-//    } else {
-////      buttonColor(ORANGE);                    // CHARGING
-//      batteryChargingAnimation();
-//      charging = true;
-//    }
-//  } else {
-//
-//    // Set battery LED to what it would be without charging animation
-//    if (charging) {
-//      showBatteryLevel();
-//      charging = false;
-//    }
-//
-//    // Turn off battery indicator LEDs after set time
-//    if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
-//      setAllBatteryLed(LOW);
-//    }
-//  }
+  if(usbConnected()){
+    if(usbVoltage() > USB_FULL_MIN_MV) {
+//      buttonColor(GREEN);                     // FULL
+      setAllBatteryLed(HIGH);
+    } else {
+//      buttonColor(ORANGE);                    // CHARGING
+      batteryChargingAnimation();
+      charging = true;
+    }
+  } else {
+
+    // Set battery LED to what it would be without charging animation
+    if (charging) {
+      showBatteryLevel();
+      charging = false;
+    }
+
+    // Turn off battery indicator LEDs after set time
+    if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
+      setAllBatteryLed(LOW);
+    }
+  }
 
     
   for (uint8_t row = 0; row < ROWS; row++) {
@@ -241,6 +235,13 @@ void loop(void) {
   if( (millis() - lastKeyActivityTimer) > idleBeforeSleepTime) {
     keyboardShutdown();
   }
+
+   #if (__FPU_USED == 1)
+  __set_FPSCR(__get_FPSCR() & ~(0x0000009F)); 
+  (void) __get_FPSCR();
+  NVIC_ClearPendingIRQ(FPU_IRQn);
+  #endif
+  uint32_t err_code = sd_app_evt_wait();
 
   delay(7);
  
