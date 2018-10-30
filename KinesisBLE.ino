@@ -85,12 +85,17 @@ void setup(void) {
     digitalWrite(col_pins[col], HIGH);
   }
 
-  pinMode(LED_CAPS_PIN, OUTPUT);
-  pinMode(LED_NUM_PIN, OUTPUT);
-  pinMode(LED_SCR_PIN, OUTPUT);
-  pinMode(LED_KEY_PIN, OUTPUT);
+//  pinMode(LED_CAPS_PIN, OUTPUT);
+//  pinMode(LED_NUM_PIN, OUTPUT);
+//  pinMode(LED_SCR_PIN, OUTPUT);
+//  pinMode(LED_KEY_PIN, OUTPUT);
+   
+//  showBatteryLevel();  
 
-  showBatteryLevel();  
+//  digitalWrite(LED_CAPS_PIN, LOW);
+//  digitalWrite(LED_NUM_PIN, LOW);
+//  digitalWrite(LED_SCR_PIN, LOW);
+//  digitalWrite(LED_KEY_PIN, LOW);
 
   NRF_UARTE0->ENABLE = 0;  //disable UART
   NRF_TWIM1 ->ENABLE = 0; //disable TWI Master
@@ -98,34 +103,39 @@ void setup(void) {
   NRF_NFCT->TASKS_DISABLE = 1; //disable NFC, confirm this is the right way
 
   buttonColor(BLUE);
+
+//  pinMode(USB_PIN, INPUT);
 }
 
 bool charging = false;
 
+int lastUsbCheck = 0;
+
 void loop(void) {
 
-  if(usbConnected()){
-    if(usbVoltage() > USB_FULL_MIN_MV) {
-//      buttonColor(GREEN);                     // FULL
-      setAllBatteryLed(HIGH);
-    } else {
-//      buttonColor(ORANGE);                    // CHARGING
-      batteryChargingAnimation();
-      charging = true;
-    }
-  } else {
-
-    // Set battery LED to what it would be without charging animation
-    if (charging) {
-      showBatteryLevel();
-      charging = false;
-    }
-
-    // Turn off battery indicator LEDs after set time
-    if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
-      setAllBatteryLed(LOW);
-    }
-  }
+    
+//  if(usbConnected()){
+//    if(usbVoltage() > USB_FULL_MIN_MV) {
+////      buttonColor(GREEN);                     // FULL
+//      setAllBatteryLed(HIGH);
+//    } else {
+////      buttonColor(ORANGE);                    // CHARGING
+//      batteryChargingAnimation();
+//      charging = true;
+//    }
+//  } else {
+//
+//    // Set battery LED to what it would be without charging animation
+//    if (charging) {
+//      showBatteryLevel();
+//      charging = false;
+//    }
+//
+//    // Turn off battery indicator LEDs after set time
+//    if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
+//      setAllBatteryLed(LOW);
+//    }
+//  }
 
     
   for (uint8_t row = 0; row < ROWS; row++) {
