@@ -81,7 +81,7 @@ int usbRawVoltage(void) {
 }
 
 bool usbConnected(void) {
-  return usbVoltage() > 1000;
+  return usbRawVoltage() > 2000;
 }
 
 int batteryMv(void) {

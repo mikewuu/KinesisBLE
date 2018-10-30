@@ -103,8 +103,6 @@ void setup(void) {
 
 bool charging = false;
 
-int lastUsbCheck = 0;
-
 void loop(void) {
 
     
