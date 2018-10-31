@@ -28,7 +28,7 @@
  * Power Consumption
  */
 #define MINS_BEFORE_SHUTDOWN 15
-#define MINS_SHOW_BATTERY_LED 5
+#define MINS_SHOW_BATTERY_LED 0.5     // Turn off battery indicators after 30 seconds
 
 #define USB_BAUDRATE 115200
 #define USB_FULL_MIN_MV 4978  // Used to determine if battery is charging.
@@ -234,6 +234,11 @@ void loop(void) {
     keyboardShutdown();
   }
 
+  /**
+   * Bug fix: Disable FPU manually to enable
+   * sleep after running into
+   * a float.
+   */
    #if (__FPU_USED == 1)
   __set_FPSCR(__get_FPSCR() & ~(0x0000009F)); 
   (void) __get_FPSCR();
