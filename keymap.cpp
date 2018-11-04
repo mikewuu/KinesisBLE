@@ -231,6 +231,7 @@ void handle_keychange(uint8_t row, uint8_t col, state_t state) {
       break;
     }
     default: {
+      
       // Normal keycode
       if (state == DOWN) {
         register_keydown(keycode);

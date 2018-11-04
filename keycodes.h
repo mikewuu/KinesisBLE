@@ -103,8 +103,8 @@
 #define K_DOWN 0x0051 // Keyboard Down Arrow
 #define K___UP 0x0052 // Keyboard Up Arrow
 
-#define K_PGRM 0x0000    // Kinesis progm key
-#define K_KYPD 0x0000     // Kinesis keypad key
+#define K_PGRM 0x9999    // Kinesis progm key
+#define K_KYPD 0x9998     // Kinesis keypad key
 
 // Kinesis Left Thumb Keys
 #define K__SL1 (K_EQUL)
@@ -124,14 +124,14 @@
 
 // Layer Keys
 #define K_RAISE 0x9001
-#define K_RSLA 0x9002   // Raised: CMD + Shift + Left Arrow
-#define K_RSRA 0x9003   // Raised: CMD + Shift + Rignt Arrow
-#define K_RRPT 0x9004   // Raised: Right Paranthesis
-#define K_RLPT 0x9005   // Raised: Left Paranthesis
-#define K_RRBK (K_RBRC) // Raised: Right Bracket
-#define K_RLBK (K_LBRC) // Raised: Left Bracket
-#define K_RRBC 0x9008   // Raised: Right Brace
-#define K_RLBC 0x9009   // Raised: Left Brace
-#define K_RQTE 0x9010   // Raised: Quote
+#define K_RSLA  0x9002   // Raised: CMD + Shift + Left Arrow
+#define K_RSRA  0x9003   // Raised: CMD + Shift + Rignt Arrow
+#define K_RRPT  0x9004   // Raised: Right Paranthesis
+#define K_RLPT  0x9005   // Raised: Left Paranthesis
+#define K_RRBK  (K_RBRC) // Raised: Right Bracket
+#define K_RLBK  (K_LBRC) // Raised: Left Bracket
+#define K_RRBC  0x9008   // Raised: Right Brace
+#define K_RLBC  0x9009   // Raised: Left Brace
+#define K_RQTE  0x9010   // Raised: Quote
 
 #endif //KEYCODES_H
