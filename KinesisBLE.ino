@@ -26,7 +26,7 @@
  * Power Consumption
  */
 #define MINS_BEFORE_SHUTDOWN 15
-#define MINS_SHOW_BATTERY_LED 5
+#define MINS_SHOW_BATTERY_LED 0.5
 
 #define USB_BAUDRATE 115200
 #define USB_FULL_MIN_MV 4978  // Used to determine if battery is charging.
