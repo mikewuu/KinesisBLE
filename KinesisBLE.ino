@@ -69,7 +69,6 @@ MCP mcp(0, SPI_SS_PIN);
 void setup(void) {
 
   mcp.begin();
-  Wire.setClock(400000L); // Manually set high (max nRf52) speed i2c
 
 //  Serial.begin(USB_BAUDRATE);
 
@@ -292,7 +291,7 @@ void setLED(int pin, bool state) {
   if (state == HIGH) {
     analogWrite(pin, 10);
   } else {
-    digitalWrite(pin, LOW);
+    analogWrite(pin, 0);
   }
 }
 
@@ -340,7 +339,7 @@ void keyboardShutdown() {
 
 void batteryChargingAnimation() {
    uint8_t battery = batteryPercentage();
-
+   
    int now = millis();
    
    if ( (millis() - chargingAnimationLastToggle) < 700) {
@@ -348,7 +347,7 @@ void batteryChargingAnimation() {
    }
 
    chargingAnimationLastToggle = now;
-   
+ 
    if(battery > 75) {
     setLED(LED_CAPS_PIN, HIGH);
     setLED(LED_NUM_PIN, HIGH);
