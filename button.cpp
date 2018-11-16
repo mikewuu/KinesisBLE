@@ -34,5 +34,5 @@ void buttonColor(int color) {
     default: buttonRGB(0, 0, 0);
       break;      
   }
-
 }
+

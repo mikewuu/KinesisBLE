@@ -28,7 +28,7 @@
  * Power Consumption
  */
 #define MINS_BEFORE_SHUTDOWN 15
-#define MINS_SHOW_BATTERY_LED 0.5     // Turn off battery indicators after 30 seconds
+#define MINS_SHOW_BATTERY_LED 3
 
 #define USB_BAUDRATE 115200
 #define USB_FULL_MIN_MV 4978  // Used to determine if battery is charging.
@@ -72,7 +72,7 @@ void setup(void) {
   Wire.setClock(400000L); // Manually set high (max nRf52) speed i2c
 
 //  Serial.begin(USB_BAUDRATE);
-  
+
   init_bluetooth();
 
   for (uint8_t row = 0; row < ROWS; row++) {
@@ -259,28 +259,41 @@ void showBatteryLevel() {
    uint8_t battery = batteryPercentage();
    
    if(battery > 75) {
-    digitalWrite(LED_CAPS_PIN, HIGH);
-    digitalWrite(LED_NUM_PIN, HIGH);
-    digitalWrite(LED_SCR_PIN, HIGH);
-    digitalWrite(LED_KEY_PIN, HIGH);
+    setLED(LED_CAPS_PIN, HIGH);
+    setLED(LED_NUM_PIN, HIGH);
+    setLED(LED_SCR_PIN, HIGH);
+    setLED(LED_KEY_PIN, HIGH);
    } else if (battery > 50) {
-    digitalWrite(LED_CAPS_PIN, HIGH);
-    digitalWrite(LED_NUM_PIN, HIGH);
-    digitalWrite(LED_SCR_PIN, HIGH);
-    digitalWrite(LED_KEY_PIN, LOW);
+    setLED(LED_CAPS_PIN, HIGH);
+    setLED(LED_NUM_PIN, HIGH);
+    setLED(LED_SCR_PIN, HIGH);
+    setLED(LED_KEY_PIN, LOW);
    } else if (battery > 25) {
-    digitalWrite(LED_CAPS_PIN, HIGH);
-    digitalWrite(LED_NUM_PIN, HIGH);
-    digitalWrite(LED_SCR_PIN, LOW);
-    digitalWrite(LED_KEY_PIN, LOW);
+    setLED(LED_CAPS_PIN, HIGH);
+    setLED(LED_NUM_PIN, HIGH);
+    setLED(LED_SCR_PIN, LOW);
+    setLED(LED_KEY_PIN, LOW);
    } else {
-    digitalWrite(LED_CAPS_PIN, HIGH);
-    digitalWrite(LED_NUM_PIN, LOW);
-    digitalWrite(LED_SCR_PIN, LOW);
-    digitalWrite(LED_KEY_PIN, LOW);
+    setLED(LED_CAPS_PIN, HIGH);
+    setLED(LED_NUM_PIN, LOW);
+    setLED(LED_SCR_PIN, LOW);
+    setLED(LED_KEY_PIN, LOW);
    }
    batteryLedOn = true;
    batteryLedTimer = millis();
+}
+
+/**
+ * Turn individual LED ON/OFF. We're using this instead
+ * of digitalWrite, so that we can control the 
+ * brightness.
+ */
+void setLED(int pin, bool state) {
+  if (state == HIGH) {
+    analogWrite(pin, 10);
+  } else {
+    digitalWrite(pin, LOW);
+  }
 }
 
 /**
@@ -288,10 +301,10 @@ void showBatteryLevel() {
  * indicator LEDs.
  */
 void setAllBatteryLed(bool state) {
-    digitalWrite(LED_CAPS_PIN, state);
-    digitalWrite(LED_NUM_PIN, state);
-    digitalWrite(LED_SCR_PIN, state);
-    digitalWrite(LED_KEY_PIN, state);
+  setLED(LED_CAPS_PIN, state);
+  setLED(LED_NUM_PIN, state);
+  setLED(LED_SCR_PIN, state);
+  setLED(LED_KEY_PIN, state);
 }
 
 /**
@@ -337,49 +350,49 @@ void batteryChargingAnimation() {
    chargingAnimationLastToggle = now;
    
    if(battery > 75) {
-    digitalWrite(LED_CAPS_PIN, HIGH);
-    digitalWrite(LED_NUM_PIN, HIGH);
-    digitalWrite(LED_SCR_PIN, HIGH);
+    setLED(LED_CAPS_PIN, HIGH);
+    setLED(LED_NUM_PIN, HIGH);
+    setLED(LED_SCR_PIN, HIGH);
     if (chargingAnimationOn) {
-      digitalWrite(LED_KEY_PIN, HIGH);
+      setLED(LED_KEY_PIN, HIGH);
       chargingAnimationOn = false;
     } else {
-      digitalWrite(LED_KEY_PIN, LOW);
+      setLED(LED_KEY_PIN, LOW);
       chargingAnimationOn = true;
     }
    } else if (battery > 50) {
-    digitalWrite(LED_CAPS_PIN, HIGH);
-    digitalWrite(LED_NUM_PIN, HIGH);
+    setLED(LED_CAPS_PIN, HIGH);
+    setLED(LED_NUM_PIN, HIGH);
     if (chargingAnimationOn) {
-      digitalWrite(LED_SCR_PIN, HIGH);
+      setLED(LED_SCR_PIN, HIGH);
       chargingAnimationOn = false;
     } else {
-      digitalWrite(LED_SCR_PIN, LOW);
+      setLED(LED_SCR_PIN, LOW);
       chargingAnimationOn = true;
     }
-    digitalWrite(LED_KEY_PIN, LOW);
+    setLED(LED_KEY_PIN, LOW);
    } else if (battery > 25) {
-    digitalWrite(LED_CAPS_PIN, HIGH);
+    setLED(LED_CAPS_PIN, HIGH);
     if (chargingAnimationOn) {
-      digitalWrite(LED_NUM_PIN, HIGH);
+      setLED(LED_NUM_PIN, HIGH);
       chargingAnimationOn = false;
     } else {
-      digitalWrite(LED_NUM_PIN, LOW);
+      setLED(LED_NUM_PIN, LOW);
       chargingAnimationOn = true;
     }
-    digitalWrite(LED_SCR_PIN, LOW);
-    digitalWrite(LED_KEY_PIN, LOW);
+    setLED(LED_SCR_PIN, LOW);
+    setLED(LED_KEY_PIN, LOW);
    } else {
     if (chargingAnimationOn) {
-      digitalWrite(LED_CAPS_PIN, HIGH);
+      setLED(LED_CAPS_PIN, HIGH);
       chargingAnimationOn = false;
     } else {
-      digitalWrite(LED_CAPS_PIN, LOW);
+      setLED(LED_CAPS_PIN, LOW);
       chargingAnimationOn = true;
     }    
-    digitalWrite(LED_NUM_PIN, LOW);
-    digitalWrite(LED_SCR_PIN, LOW);
-    digitalWrite(LED_KEY_PIN, LOW);
+    setLED(LED_NUM_PIN, LOW);
+    setLED(LED_SCR_PIN, LOW);
+    setLED(LED_KEY_PIN, LOW);
    }
 }
 

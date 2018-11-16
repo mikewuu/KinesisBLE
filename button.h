@@ -24,5 +24,7 @@
 
   void buttonRGB(int red, int green, int blue);
   void buttonColor(int color);
+
+  void setLED(int pin, bool state);
   
 #endif 
