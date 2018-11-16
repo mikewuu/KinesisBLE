@@ -7,6 +7,7 @@ Firmware for a custom controller to turn the [Kinesis Keyboard](https://www.kine
 ## Which Branch?
 
 SPI - master
+
 i2c / TWI - i2c
 
 ## Board Versions
