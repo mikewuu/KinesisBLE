@@ -28,7 +28,7 @@
  * Power Consumption
  */
 #define MINS_BEFORE_SHUTDOWN 15
-#define MINS_SHOW_BATTERY_LED 0.08
+#define MINS_SHOW_BATTERY_LED 3
 
 #define USB_BAUDRATE 115200
 #define USB_FULL_MIN_MV 4978  // Used to determine if battery is charging.
@@ -213,7 +213,18 @@ void loop(void) {
       state_t prev = (prev_states[row] >> col) & 1;
       
       if (curr != prev) {
-        handle_keychange(row, col, curr);
+        
+        char* command = handle_keychange(row, col, curr);
+
+        /**
+         * If we pressed a key to shutdown keyboard, put
+         * the keyboard to sleep.
+         */
+        if(command == "shutdown") {
+          delay(250); // Let things settle on key-up, to prevent immediately waking up.
+          keyboardShutdown();
+        }
+        
         prev_states[row] ^= (uint16_t)1 << col;
         lastKeyActivityTimer = millis();                    // Update last activity timer to prevent sleep
         goto END_OF_LOOP;                                   // Handle 1 key change at a time

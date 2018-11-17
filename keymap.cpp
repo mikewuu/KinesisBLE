@@ -124,7 +124,7 @@ uint16_t get_keycode_at(uint8_t row, uint8_t col) {
   return K_NONE;
 }
 
-void handle_keychange(uint8_t row, uint8_t col, state_t state) { 
+char* handle_keychange(uint8_t row, uint8_t col, state_t state) { 
   
   uint16_t keycode = get_keycode_at(row, col);
   if (state == DOWN) {
@@ -231,9 +231,12 @@ void handle_keychange(uint8_t row, uint8_t col, state_t state) {
       }
       break;
     }
-    case K_PGRM: {
+    case K_KYPD: {
       showBatteryLevel();  
       break;
+    }
+    case K_PGRM: {
+      return "shutdown";
     }
     default: {
       
