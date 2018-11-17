@@ -11,4 +11,14 @@ int batteryMv();
 bool usbConnected();
 int usbVoltage();
 
+extern bool batteryLedOn;
+extern int  batteryLedTimer;
+extern int  chargingAnimationLastToggle;
+extern bool chargingAnimationOn;
+
+void showBatteryLevel();
+void setLED(int pin, bool state);
+void setAllBatteryLed(bool state);
+void batteryChargingAnimation();
+
 #endif //BATTERY_HUETOOTH_H

@@ -105,6 +105,129 @@ int usbVoltage(void) {
   }
   
   return totalUsbMv / numUsbVoltageReadings;
+}  
+
+bool chargingAnimationOn = false;
+int chargingAnimationLastToggle = 0;
+int batteryLedTimer = 0;
+bool batteryLedOn = false;
+
+
+/**
+ * Turn individual LED ON/OFF. We're using this instead
+ * of digitalWrite, so that we can control the 
+ * brightness.
+ */
+void setLED(int pin, bool state) {
+  if (state == HIGH) {
+    analogWrite(pin, 10);
+  } else {
+    analogWrite(pin, 0);
+  }
 }
+
+/**
+ * Turns off all battery level
+ * indicator LEDs.
+ */
+void setAllBatteryLed(bool state) {
+  setLED(LED_CAPS_PIN, state);
+  setLED(LED_NUM_PIN, state);
+  setLED(LED_SCR_PIN, state);
+  setLED(LED_KEY_PIN, state);
+}
+
+
+/**
+ * Read battery and update Kinesis LEDs
+ * 
+ */
+void showBatteryLevel() { 
+
+   uint8_t battery = batteryPercentage();
+   
+   if(battery > 75) {
+    setLED(LED_CAPS_PIN, HIGH);
+    setLED(LED_NUM_PIN, HIGH);
+    setLED(LED_SCR_PIN, HIGH);
+    setLED(LED_KEY_PIN, HIGH);
+   } else if (battery > 50) {
+    setLED(LED_CAPS_PIN, HIGH);
+    setLED(LED_NUM_PIN, HIGH);
+    setLED(LED_SCR_PIN, HIGH);
+    setLED(LED_KEY_PIN, LOW);
+   } else if (battery > 25) {
+    setLED(LED_CAPS_PIN, HIGH);
+    setLED(LED_NUM_PIN, HIGH);
+    setLED(LED_SCR_PIN, LOW);
+    setLED(LED_KEY_PIN, LOW);
+   } else {
+    setLED(LED_CAPS_PIN, HIGH);
+    setLED(LED_NUM_PIN, LOW);
+    setLED(LED_SCR_PIN, LOW);
+    setLED(LED_KEY_PIN, LOW);
+   }
+   batteryLedOn = true;
+   batteryLedTimer = millis();
+}
+
+void batteryChargingAnimation() {
+   uint8_t battery = batteryPercentage();
+   
+   int now = millis();
+   
+   if ( (millis() - chargingAnimationLastToggle) < 700) {
+    return;
+   }
+
+   chargingAnimationLastToggle = now;
+ 
+   if(battery > 75) {
+    setLED(LED_CAPS_PIN, HIGH);
+    setLED(LED_NUM_PIN, HIGH);
+    setLED(LED_SCR_PIN, HIGH);
+    if (chargingAnimationOn) {
+      setLED(LED_KEY_PIN, HIGH);
+      chargingAnimationOn = false;
+    } else {
+      setLED(LED_KEY_PIN, LOW);
+      chargingAnimationOn = true;
+    }
+   } else if (battery > 50) {
+    setLED(LED_CAPS_PIN, HIGH);
+    setLED(LED_NUM_PIN, HIGH);
+    if (chargingAnimationOn) {
+      setLED(LED_SCR_PIN, HIGH);
+      chargingAnimationOn = false;
+    } else {
+      setLED(LED_SCR_PIN, LOW);
+      chargingAnimationOn = true;
+    }
+    setLED(LED_KEY_PIN, LOW);
+   } else if (battery > 25) {
+    setLED(LED_CAPS_PIN, HIGH);
+    if (chargingAnimationOn) {
+      setLED(LED_NUM_PIN, HIGH);
+      chargingAnimationOn = false;
+    } else {
+      setLED(LED_NUM_PIN, LOW);
+      chargingAnimationOn = true;
+    }
+    setLED(LED_SCR_PIN, LOW);
+    setLED(LED_KEY_PIN, LOW);
+   } else {
+    if (chargingAnimationOn) {
+      setLED(LED_CAPS_PIN, HIGH);
+      chargingAnimationOn = false;
+    } else {
+      setLED(LED_CAPS_PIN, LOW);
+      chargingAnimationOn = true;
+    }    
+    setLED(LED_NUM_PIN, LOW);
+    setLED(LED_SCR_PIN, LOW);
+    setLED(LED_KEY_PIN, LOW);
+   }
+}
+
 
 

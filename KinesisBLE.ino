@@ -28,7 +28,7 @@
  * Power Consumption
  */
 #define MINS_BEFORE_SHUTDOWN 15
-#define MINS_SHOW_BATTERY_LED 3
+#define MINS_SHOW_BATTERY_LED 0.08
 
 #define USB_BAUDRATE 115200
 #define USB_FULL_MIN_MV 4978  // Used to determine if battery is charging.
@@ -50,8 +50,6 @@ state_t get_state(uint8_t row, uint8_t col) {
 /**
  * Battery LED on time
  */
-bool  batteryLedOn = false; 
-int   batteryLedTimer = 0;
 int   batteryOnTime = MINS_SHOW_BATTERY_LED*60*1000;                       
 
 /**
@@ -60,9 +58,6 @@ int   batteryOnTime = MINS_SHOW_BATTERY_LED*60*1000;
  */
 int lastKeyActivityTimer = 0;
 int idleBeforeSleepTime = MINS_BEFORE_SHUTDOWN*60*1000;   
-
-bool  chargingAnimationOn = false;
-int   chargingAnimationLastToggle = 0;
 
 MCP mcp(0, SPI_SS_PIN); 
 
@@ -250,63 +245,6 @@ void loop(void) {
 }
 
 /**
- * Read battery and update Kinesis LEDs
- * 
- */
-void showBatteryLevel() { 
-
-   uint8_t battery = batteryPercentage();
-   
-   if(battery > 75) {
-    setLED(LED_CAPS_PIN, HIGH);
-    setLED(LED_NUM_PIN, HIGH);
-    setLED(LED_SCR_PIN, HIGH);
-    setLED(LED_KEY_PIN, HIGH);
-   } else if (battery > 50) {
-    setLED(LED_CAPS_PIN, HIGH);
-    setLED(LED_NUM_PIN, HIGH);
-    setLED(LED_SCR_PIN, HIGH);
-    setLED(LED_KEY_PIN, LOW);
-   } else if (battery > 25) {
-    setLED(LED_CAPS_PIN, HIGH);
-    setLED(LED_NUM_PIN, HIGH);
-    setLED(LED_SCR_PIN, LOW);
-    setLED(LED_KEY_PIN, LOW);
-   } else {
-    setLED(LED_CAPS_PIN, HIGH);
-    setLED(LED_NUM_PIN, LOW);
-    setLED(LED_SCR_PIN, LOW);
-    setLED(LED_KEY_PIN, LOW);
-   }
-   batteryLedOn = true;
-   batteryLedTimer = millis();
-}
-
-/**
- * Turn individual LED ON/OFF. We're using this instead
- * of digitalWrite, so that we can control the 
- * brightness.
- */
-void setLED(int pin, bool state) {
-  if (state == HIGH) {
-    analogWrite(pin, 10);
-  } else {
-    analogWrite(pin, 0);
-  }
-}
-
-/**
- * Turns off all battery level
- * indicator LEDs.
- */
-void setAllBatteryLed(bool state) {
-  setLED(LED_CAPS_PIN, state);
-  setLED(LED_NUM_PIN, state);
-  setLED(LED_SCR_PIN, state);
-  setLED(LED_KEY_PIN, state);
-}
-
-/**
  * Deep-sleep (max power saving)
  * Enter this mode if keyboard has been idle for
  * some time.
@@ -335,63 +273,5 @@ void keyboardShutdown() {
   {
     NRF_POWER->SYSTEMOFF = 1;
   }
-}
-
-void batteryChargingAnimation() {
-   uint8_t battery = batteryPercentage();
-   
-   int now = millis();
-   
-   if ( (millis() - chargingAnimationLastToggle) < 700) {
-    return;
-   }
-
-   chargingAnimationLastToggle = now;
- 
-   if(battery > 75) {
-    setLED(LED_CAPS_PIN, HIGH);
-    setLED(LED_NUM_PIN, HIGH);
-    setLED(LED_SCR_PIN, HIGH);
-    if (chargingAnimationOn) {
-      setLED(LED_KEY_PIN, HIGH);
-      chargingAnimationOn = false;
-    } else {
-      setLED(LED_KEY_PIN, LOW);
-      chargingAnimationOn = true;
-    }
-   } else if (battery > 50) {
-    setLED(LED_CAPS_PIN, HIGH);
-    setLED(LED_NUM_PIN, HIGH);
-    if (chargingAnimationOn) {
-      setLED(LED_SCR_PIN, HIGH);
-      chargingAnimationOn = false;
-    } else {
-      setLED(LED_SCR_PIN, LOW);
-      chargingAnimationOn = true;
-    }
-    setLED(LED_KEY_PIN, LOW);
-   } else if (battery > 25) {
-    setLED(LED_CAPS_PIN, HIGH);
-    if (chargingAnimationOn) {
-      setLED(LED_NUM_PIN, HIGH);
-      chargingAnimationOn = false;
-    } else {
-      setLED(LED_NUM_PIN, LOW);
-      chargingAnimationOn = true;
-    }
-    setLED(LED_SCR_PIN, LOW);
-    setLED(LED_KEY_PIN, LOW);
-   } else {
-    if (chargingAnimationOn) {
-      setLED(LED_CAPS_PIN, HIGH);
-      chargingAnimationOn = false;
-    } else {
-      setLED(LED_CAPS_PIN, LOW);
-      chargingAnimationOn = true;
-    }    
-    setLED(LED_NUM_PIN, LOW);
-    setLED(LED_SCR_PIN, LOW);
-    setLED(LED_KEY_PIN, LOW);
-   }
 }
 

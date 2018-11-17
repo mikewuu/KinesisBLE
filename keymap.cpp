@@ -4,6 +4,7 @@
 #include "keymap.h"
 #include "keycodes.h"
 #include "bluetooth.h"
+#include "battery.h"
 
 uint16_t layer_cache[15][7] = {
   {______, ______, ______, ______, ______, ______, ______},
@@ -228,6 +229,10 @@ void handle_keychange(uint8_t row, uint8_t col, state_t state) {
         register_keyup(K_LSFT);
         register_keyup(K_APST);    
       }
+      break;
+    }
+    case K_PGRM: {
+      showBatteryLevel();  
       break;
     }
     default: {
