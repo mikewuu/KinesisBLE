@@ -11,28 +11,6 @@
 #include "button.h"
 #include "Adafruit_MCP23017.h"
 
-/**
- * Keyboard Matrix
- */
-#define ROWS 15
-#define COLS 7
-
-/**
- * Only debouncing once because each iteration already 
- * takes roughly 8ms due to nRF52 max 
- * i2C speed of 400khz.
- */
-#define DEBOUNCING_DELAY 2
-
-/**
- * Power Consumption
- */
-#define MINS_BEFORE_SHUTDOWN 15
-#define MINS_SHOW_BATTERY_LED 3
-
-#define USB_BAUDRATE 115200
-#define USB_FULL_MIN_MV 4978  // Used to determine if battery is charging.
-
 uint8_t col_pins[COLS] = COL_PINS;
 uint8_t row_pins[ROWS] = ROW_PINS;
 
@@ -50,7 +28,7 @@ state_t get_state(uint8_t row, uint8_t col) {
 /**
  * Battery LED on time
  */
-int   batteryOnTime = MINS_SHOW_BATTERY_LED*60*1000;                       
+int batteryOnTime = MINS_SHOW_BATTERY_LED*60*1000;                       
 
 /**
  * Timestamp of last key press activity. Used to
@@ -59,13 +37,18 @@ int   batteryOnTime = MINS_SHOW_BATTERY_LED*60*1000;
 int lastKeyActivityTimer = 0;
 int idleBeforeSleepTime = MINS_BEFORE_SHUTDOWN*60*1000;   
 
+/**
+ * MCP23S17 (Address: 0)
+ */
 MCP mcp(0, SPI_SS_PIN); 
 
 void setup(void) {
 
   mcp.begin();
 
-//  Serial.begin(USB_BAUDRATE);
+  #ifdef DEBUG
+    Serial.begin(USB_BAUDRATE);
+  #endif
 
   init_bluetooth();
 
@@ -79,20 +62,35 @@ void setup(void) {
     digitalWrite(col_pins[col], HIGH);
   }
 
+  /**
+   * Initialize Battery Indicator LED(s)
+   */
   pinMode(LED_CAPS_PIN, OUTPUT);
   pinMode(LED_NUM_PIN, OUTPUT);
   pinMode(LED_SCR_PIN, OUTPUT);
   pinMode(LED_KEY_PIN, OUTPUT);
    
-  showBatteryLevel();  
+  showBatteryLevel();
 
-  NRF_UARTE0->ENABLE = 0;  //disable UART
+  /**
+   * Disable Unused nRF52 Features
+   */
+  #ifdef DEBUG
+    NRF_UARTE0->ENABLE = 0;  //disable UART
+  #else
+   NRF_UARTE0->ENABLE = 1;
+  #endif
   NRF_TWIM1 ->ENABLE = 0; //disable TWI Master
   NRF_TWIS1 ->ENABLE = 0; //disable TWI Slave
   NRF_NFCT->TASKS_DISABLE = 1; //disable NFC, confirm this is the right way
 
+  /**
+   * Turn on Power Button LED
+   * 
+   * Turning it on here in the setup means this LED is
+   * always on as long as the keyboard is on.
+   */
   buttonColor(BLUE);
-
 }
 
 bool charging = false;
@@ -102,10 +100,8 @@ void loop(void) {
     
   if(usbConnected()){
     if(usbVoltage() > USB_FULL_MIN_MV) {
-//      buttonColor(GREEN);                     // FULL
       setAllBatteryLed(HIGH);
     } else {
-//      buttonColor(ORANGE);                    // CHARGING
       batteryChargingAnimation();
       charging = true;
     }
@@ -157,6 +153,7 @@ void loop(void) {
 
     /**
      * Set Debouncing Delay
+     * 
      * Every new row_read needs to be the same (stored in temp_states)
      * for DEBOUNCING_DELAY amount of time. ie. Prevent the row
      * states from rapidly changing.
@@ -172,6 +169,7 @@ void loop(void) {
 
   /**
    * Update States
+   * 
    * If debouncing delay is up and the states are still the same, 
    * then go ahead and store the new states to be processed.
    */
@@ -188,6 +186,7 @@ void loop(void) {
 
   /**
    * Compare Row States
+   * 
    * Check to see if anything has changed and subsequently handle
    * the change.
    */
@@ -205,6 +204,7 @@ void loop(void) {
 
       /**
        * Check Each Column
+       * 
        * Examines each bit to see if the state is a 0 or a 1. Shift
        * right by column index to get current column and & 1 to
        * ignore all bits to the left.
@@ -221,7 +221,12 @@ void loop(void) {
          * the keyboard to sleep.
          */
         if(command == "shutdown") {
-          delay(250); // Let things settle on key-up, to prevent immediately waking up.
+          
+          /**
+           * Delay to prevent key-up from triggering wake-up. 
+           */
+          delay(1000);
+          
           keyboardShutdown();
         }
         
@@ -240,8 +245,9 @@ void loop(void) {
   }
 
   /**
-   * Bug fix: Disable FPU manually to enable
-   * sleep after running into
+   * Re-enable Sleep
+   * 
+   * Disable FPU manually to enable sleep after running into
    * a float.
    */
    #if (__FPU_USED == 1)
@@ -251,24 +257,42 @@ void loop(void) {
   #endif
   uint32_t err_code = sd_app_evt_wait();
 
+  /**
+   * Power Savings Sleep (wait for event, not deep-sleep)
+   * 
+   * This is what allows for lower power consumption. As the loop takes 1ms to run, if we're 
+   * sleeping for 7ms, we're theoretically only using 12.5% of the power we would require
+   * without the delay.
+   */
   delay(7);
  
 }
 
 /**
  * Deep-sleep (max power saving)
- * Enter this mode if keyboard has been idle for
- * some time.
+ * 
+ * Once entered, the keyboard will need to 'wake-up' on a keypress. This might
+ * take a few seconds, so we only enter this mode after some idle time or
+ * manually. Consumes about 150uA.
  */
 void keyboardShutdown() {
 
-  buttonColor(OFF);       // Power button LED
-  setAllBatteryLed(LOW);    // Battery indicator LEDs
-  
+  /**
+   * Turn off LED(s)
+   */
+  buttonColor(OFF);       
+  setAllBatteryLed(LOW);   
+
+  /**
+   * Switch all the row pins to LOW
+   */
   for (uint8_t row = 0; row < ROWS; row++) {
     mcp.digitalWrite(row_pins[row], LOW);    
   }
-  
+
+  /**
+   * Set up column pins to wake-up on LOW.
+   */
   for (uint8_t col = 0; col < COLS; col++) {
     NRF_GPIO->PIN_CNF[col_pins[col]] |= ((uint32_t) GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
   }
@@ -276,7 +300,9 @@ void keyboardShutdown() {
   uint8_t sd_en;
   (void) sd_softdevice_is_enabled(&sd_en);
 
-  // Enter System OFF state
+  /**
+   * Enter system-off state.
+   */
   if ( sd_en )
   {
     sd_power_system_off();
