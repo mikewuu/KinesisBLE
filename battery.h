@@ -7,9 +7,9 @@
 #define VBAT_DIVIDER_COMP (1.403F)        // Compensation factor for the VBAT divider, This is just 1 / VBAT_DIVIDER (above)
 
 uint8_t batteryPercentage(); 
-int batteryMv();
-bool usbConnected();
-int usbVoltage();
+int     batteryMv();
+bool    usbConnected();
+int     usbVoltage();
 
 extern bool batteryLedOn;
 extern int  batteryLedTimer;

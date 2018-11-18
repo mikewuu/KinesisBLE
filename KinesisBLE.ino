@@ -86,9 +86,9 @@ void setup(void) {
      * Disable Unused nRF52 Features
      */
     #ifdef DEBUG
-        NRF_UARTE0->ENABLE = 0;  //disable UART
+        // DO NOTHING (UART enabled)
     #else
-        NRF_UARTE0->ENABLE = 1;
+        NRF_UARTE0->ENABLE = 0; //disable UART
     #endif
     NRF_TWIM1 ->ENABLE = 0; //disable TWI Master
     NRF_TWIS1 ->ENABLE = 0; //disable TWI Slave
@@ -106,26 +106,9 @@ void setup(void) {
 
 void loop(void) {
 
-    /**
-     * Keyboard LED(s)
-     */
-    if(usbConnected()){
-        if(usbVoltage() > USB_FULL_MIN_MV) {
-            setAllBatteryLed(HIGH);
-        } else {
-            batteryChargingAnimation();
-            charging = true;
-        }
-    } else {
-        // Set battery LED to what it would be without charging animation
-        if (charging) {
-            showBatteryLevel();
-            charging = false;
-        }
-          // Turn off battery indicator LEDs after set time
-          if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
-              setAllBatteryLed(LOW);
-          }
+    // Priorities REST TIMER LED Control
+    if(!needsBreak) { 
+        process_battery_leds();
     }
 
     
@@ -280,6 +263,31 @@ void loop(void) {
     delay(7);
  
 } // END loop()
+
+
+/**
+ * Set Keyboard LED(s) according to charge status.
+ */
+void process_battery_leds() {
+      if(usbConnected()){
+          if(usbVoltage() > USB_FULL_MIN_MV) {
+              setAllBatteryLed(HIGH);
+          } else {
+              batteryChargingAnimation();
+              charging = true;
+          }
+      } else {
+          // Set battery LED to what it would be without charging animation
+          if (charging) {
+              showBatteryLevel();
+              charging = false;
+          }
+            // Turn off battery indicator LEDs after set time
+            if (batteryLedOn && ((millis() - batteryLedTimer) > batteryOnTime)) {
+                setAllBatteryLed(LOW);
+            }
+      }  
+} // END process_battery_leds()
 
 /**
  * Deep-sleep (max power saving)

@@ -5,7 +5,7 @@
 /**
  * DEBUG MODE
  */
-//#define DEBUG
+#define DEBUG
 
 /**
  * Serial Baudrate
@@ -14,7 +14,7 @@
  * are all jumbled, make sure you've set the serial monitor 
  * baudrate to the same as the one below.
  */
- #define USB_BAUDRATE 115200
+#define USB_BAUDRATE 115200
 
 /**
  * Pin Numbers
@@ -78,7 +78,8 @@
  * least REST_INTERVAL_SECS to reset the timer.
  */
 #define REST_TIMER
-#define WORK_INTERVAL_MINS 20
-#define REST_INTERVAL_SECS 3
+#define WORK_INTERVAL_MINS    20
+#define REST_INTERVAL_SECS    30
+#define WORK_TIMEOUT_MINS     5
 
 #endif
