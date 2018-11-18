@@ -21,4 +21,4 @@ void setLED(int pin, bool state);
 void setAllBatteryLed(bool state);
 void batteryChargingAnimation();
 
-#endif //BATTERY_HUETOOTH_H
+#endif //BATTERY_H

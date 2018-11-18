@@ -70,5 +70,15 @@
  */
 #define USB_FULL_MIN_MV 4978 
 
+/**
+ * Rest Timer
+ * 
+ * Flash LED(s) after WORK_INTERVAL_MINS of work to indicate
+ * that it's time to take a break. Must take a break for at 
+ * least REST_INTERVAL_SECS to reset the timer.
+ */
+#define REST_TIMER
+#define WORK_INTERVAL_MINS 20
+#define REST_INTERVAL_SECS 3
 
 #endif
