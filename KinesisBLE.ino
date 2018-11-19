@@ -111,147 +111,21 @@ void loop(void) {
         process_battery_leds();
     }
 
+    scan_kb_matrix();
+
+    handle_debouncing();
+
+    check_row_states();
     
-    for (uint8_t row = 0; row < ROWS; row++) {
-    
-        uint8_t row_read = 0;
-
-        /**
-         * Pull current row to low as columns are set to INPUT_PULLUP.
-         * The alternative would be to wire pulldown resistors.
-         */
-        mcp.digitalWrite(row_pins[row], LOW);                  
-  
-        delayMicroseconds(30);
-
-        /**
-         * Loop through each column on each row to check to see if a key
-         * was pressed. The column pin will read LOW too if a key 
-         * switch is down.
-         */
-        for (uint8_t col = 0; col < COLS; col++) {            
-         
-            if (digitalRead(col_pins[col]) == LOW) {            
-          
-              /**
-               * Turn first bit into 1 and shift left by column number.
-               * If the 5th and 7th column of the row was pressed, 
-               * row_read for the row would be 101000.
-               */         
-                row_read |= 1 << col;
-        
-            }
-        }
-
-        /**
-         * Set Debouncing Delay
-         * 
-         * Every new row_read needs to be the same (stored in temp_states)
-         * for DEBOUNCING_DELAY amount of time. ie. Prevent the row
-         * states from rapidly changing.
-         */
-        if (temp_states[row] != row_read) {
-            temp_states[row] = row_read;          
-            debouncing = DEBOUNCING_DELAY;        
-        }
-    
-         mcp.digitalWrite(row_pins[row], HIGH);
-    
-    }
-
-    /**
-     * Update States
-     * 
-     * If debouncing delay is up and the states are still the same, 
-     * then go ahead and store the new states to be processed.
-     */
-    if (debouncing) {
-        if (--debouncing) {
-            delay(1);          
-        } else {
-            for (uint8_t row = 0; row < ROWS; row++) {
-                prev_states[row] = curr_states[row];
-                curr_states[row] = temp_states[row];
-            }
-        }
-    }
-
-    /**
-     * Compare Row States
-     * 
-     * Check to see if anything has changed and subsequently handle
-     * the change.
-     */
-    for (uint8_t row = 0; row < ROWS; row++) {
-  
-        if (curr_states[row] == prev_states[row]) {
-            continue;
-        }
-  
-      for (uint8_t col = 0; col < COLS; col++) {
-        
-          // shift right to look at current column, then bitwise & 1 which
-          // ignores columns to the left and checks to see if state is a
-          // 1 or 0.
-    
-          /**
-           * Check Each Column
-           * 
-           * Examines each bit to see if the state is a 0 or a 1. Shift
-           * right by column index to get current column and & 1 to
-           * ignore all bits to the left.
-           */
-          state_t curr = (curr_states[row] >> col) & 1;       
-          state_t prev = (prev_states[row] >> col) & 1;
-          
-          if (curr != prev) {
-            
-              char* command = handle_keychange(row, col, curr);
-      
-              /**
-               * If we pressed a key to shutdown keyboard, put
-               * the keyboard to sleep.
-               */
-              if(command == "shutdown") {
-                
-                /**
-                 * Delay to prevent key-up from triggering wake-up. 
-                 */
-                delay(1000);
-                
-                keyboardShutdown();
-              }
-              
-              prev_states[row] ^= (uint16_t)1 << col;
-              lastKeypressTimestamp = millis();    // Update last activity timer to prevent sleep
-              goto END_OF_LOOP;    // Handle 1 key change at a time
-          }
-      }
-      
-    }
-
-    END_OF_LOOP:;
-
     #ifdef REST_TIMER
         process_rest_timer(lastKeypressTimestamp);
     #endif
 
-    if( (millis() - lastKeypressTimestamp) > inactivityTimeout) {
+    if(shouldEnterDeepSleep(lastKeypressTimestamp)){ 
         keyboardShutdown();
     }
 
-    /**
-     * Re-enable Sleep
-     * 
-     * Disable FPU manually to enable sleep after running into
-     * a float.
-     */
-      #if (__FPU_USED == 1)
-          __set_FPSCR(__get_FPSCR() & ~(0x0000009F)); 
-          (void) __get_FPSCR();
-          NVIC_ClearPendingIRQ(FPU_IRQn);
-      #endif
-    uint32_t err_code = sd_app_evt_wait();
+    disable_fpu();
 
     /**
      * Power Savings Sleep (wait for event, not deep-sleep)
@@ -264,6 +138,73 @@ void loop(void) {
  
 } // END loop()
 
+void scan_kb_matrix() {
+    for (uint8_t row = 0; row < ROWS; row++) {
+    
+      uint8_t row_read = 0;
+    
+      /**
+       * Pull current row to low as columns are set to INPUT_PULLUP.
+       * The alternative would be to wire pulldown resistors.
+       */
+      mcp.digitalWrite(row_pins[row], LOW);                  
+    
+      delayMicroseconds(30);
+    
+      /**
+       * Loop through each column on each row to check to see if a key
+       * was pressed. The column pin will read LOW too if a key 
+       * switch is down.
+       */
+      for (uint8_t col = 0; col < COLS; col++) {            
+       
+          if (digitalRead(col_pins[col]) == LOW) {            
+        
+            /**
+             * Turn first bit into 1 and shift left by column number.
+             * If the 5th and 7th column of the row was pressed, 
+             * row_read for the row would be 101000.
+             */         
+              row_read |= 1 << col;
+      
+          }
+      }
+    
+      /**
+       * Set Debouncing Delay
+       * 
+       * Every new row_read needs to be the same (stored in temp_states)
+       * for DEBOUNCING_DELAY amount of time. ie. Prevent the row
+       * states from rapidly changing.
+       */
+      if (temp_states[row] != row_read) {
+          temp_states[row] = row_read;          
+          debouncing = DEBOUNCING_DELAY;        
+      }
+    
+       mcp.digitalWrite(row_pins[row], HIGH);
+    
+    }
+}
+
+/**
+ * Handle Debouncing
+ * 
+ * If debouncing delay is up and the states are still the same, 
+ * then go ahead and accept the new states to be processed.
+ */
+void handle_debouncing() {
+    if (debouncing) {
+      if (--debouncing) {
+          delay(1);          
+      } else {
+          for (uint8_t row = 0; row < ROWS; row++) {
+              prev_states[row] = curr_states[row];
+              curr_states[row] = temp_states[row];
+          }
+      }
+    }
+}
 
 /**
  * Set Keyboard LED(s) according to charge status.
@@ -288,6 +229,61 @@ void process_battery_leds() {
             }
       }  
 } // END process_battery_leds()
+
+/**
+ * Compare Row States
+ * 
+ * Check to see if anything has changed and subsequently handle
+ * the change.
+ */
+void check_row_states() {
+    for (uint8_t row = 0; row < ROWS; row++) {
+    
+      if (curr_states[row] == prev_states[row]) {
+          continue;
+      }
+    
+    for (uint8_t col = 0; col < COLS; col++) {
+      
+        // shift right to look at current column, then bitwise & 1 which
+        // ignores columns to the left and checks to see if state is a
+        // 1 or 0.
+    
+        /**
+         * Check Each Column
+         * 
+         * Examines each bit to see if the state is a 0 or a 1. Shift
+         * right by column index to get current column and & 1 to
+         * ignore all bits to the left.
+         */
+        state_t curr = (curr_states[row] >> col) & 1;       
+        state_t prev = (prev_states[row] >> col) & 1;
+        
+        if (curr != prev) {
+          
+            int command = handle_keychange(row, col, curr);
+
+            handle_command(command);
+           
+        
+            prev_states[row] ^= (uint16_t)1 << col;
+            lastKeypressTimestamp = millis();    // Update last activity timer to prevent sleep
+            goto END_OF_LOOP;    // Handle 1 key change at a time
+        }
+    }
+    
+    }
+    
+    END_OF_LOOP:;
+}
+
+/**
+ * Check if keyboard has been inactive long enough to be
+ * put into deep-sleep mode.
+ */
+bool shouldEnterDeepSleep(int lastKeypressTimestamp){
+  return millis() - lastKeypressTimestamp > inactivityTimeout;
+}
 
 /**
  * Deep-sleep (max power saving)
@@ -331,5 +327,34 @@ void keyboardShutdown() {
   {
     NRF_POWER->SYSTEMOFF = 1;
   }
+}
+
+/** 
+ *  FPU prevents the nRF52 from going to sleep. We need
+ *  to disable it manually after it encountering a 
+ *  FLOAT to allow sleep on delay().
+ */
+void disable_fpu() {
+    #if (__FPU_USED == 1)
+        __set_FPSCR(__get_FPSCR() & ~(0x0000009F)); 
+        (void) __get_FPSCR();
+        NVIC_ClearPendingIRQ(FPU_IRQn);
+    #endif
+    uint32_t err_code = sd_app_evt_wait();  
+}
+
+/**
+ *  Handle custom commands, certain key combinations / presses
+ *  can send commands and here is where you'd define how to 
+ *  handle them.
+ */
+void handle_command(int command) {
+    switch (command) {
+        case COMMAND_SHUTDOWN: {
+            delay(1000);
+            keyboardShutdown();
+            break;
+        }
+    }
 }
 
