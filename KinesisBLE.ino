@@ -107,7 +107,7 @@ void setup(void) {
 void loop(void) {
 
     // Priorities REST TIMER LED Control
-    if(!needsBreak) { 
+    if(!restTimerUsingLeds) { 
         process_battery_leds();
     }
 

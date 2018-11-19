@@ -1,7 +1,7 @@
 #ifndef REST_TIMER_H
 #define REST_TIMER_H
 
-extern bool needsBreak;
+extern bool restTimerUsingLeds;
 
 void process_rest_timer(int lastKeypressTimestamp);
 
