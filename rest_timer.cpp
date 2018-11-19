@@ -62,6 +62,16 @@ bool needsBreak(int now, int timeLastBreak) {
 }
 
 /**
+ * Going on break.
+ */
+void start_break() {
+    onBreak = true;   
+    timeLastBreak = millis();
+    setAllBatteryLed(LOW);
+    restTimerUsingLeds = false;
+}
+
+/**
  * Rest Timer
  */
 void process_rest_timer(int lastKeypressTimestamp) {
@@ -80,16 +90,18 @@ void process_rest_timer(int lastKeypressTimestamp) {
      
         indicateNeedBreak(now);
 
-        if(hasTakenBreak(now, lastKeypressTimestamp)){
-          onBreak = true;
-          timeLastBreak = now;
-          setAllBatteryLed(LOW);
-          restTimerUsingLeds = false;
-        }
+        #ifdef REST_AUTO_BREAKS
+            if(hasTakenBreak(now, lastKeypressTimestamp)){
+              start_break();
+            }
+        #endif    
         
     }
     
 }
+
+
+
 
 
 

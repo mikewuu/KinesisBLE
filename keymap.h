@@ -10,6 +10,7 @@ int handle_keychange(uint8_t row, uint8_t col, state_t state);
 /**
  * CUSTOM COMMANDS
  */
-#define COMMAND_SHUTDOWN  0
+#define COMMAND_SHUTDOWN       10
+#define COMMAND_START_BREAK    11
 
 #endif //KEYMAP_H

@@ -133,5 +133,6 @@
 #define K_RRBC  0x9008   // Raised: Right Brace
 #define K_RLBC  0x9009   // Raised: Left Brace
 #define K_RQTE  0x9010   // Raised: Quote
+#define K_RRST  0x9011   // Raised: Start Rest / Break
 
 #endif //KEYCODES_H

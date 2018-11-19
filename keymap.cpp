@@ -98,7 +98,7 @@ const uint16_t PROGMEM layers[LAYERS][15][7] = {
     {______, ______, ______, K_RQTE, ______, ______, ______},
     {______, ______, ______, ______, ______, ______, ______}, 
     {______, ______, ______, ______, ______, K__F12, ______},
-    {______, ______, ______, ______, K__F10, ______, ______}, 
+    {______, ______, ______, ______, K__F10, K_RRST, ______}, 
     {______, ______, ______, ______, K__F11, ______, ______}
   }
 };
@@ -237,6 +237,9 @@ int handle_keychange(uint8_t row, uint8_t col, state_t state) {
     }
     case K_PGRM: {
       return COMMAND_SHUTDOWN;
+    }
+    case K_RRST: {
+      return COMMAND_START_BREAK;  
     }
     default: {
       

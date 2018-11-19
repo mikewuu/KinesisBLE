@@ -355,6 +355,10 @@ void handle_command(int command) {
             keyboardShutdown();
             break;
         }
+        case COMMAND_START_BREAK: {
+            start_break();
+            break;  
+        }
     }
 }
 
