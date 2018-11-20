@@ -80,7 +80,7 @@ const uint16_t PROGMEM layers[LAYERS][15][7] = {
     {K____0, K____P, K_SCLN, K_SLSH, K_RBRC, ______, ______},
     {K_MINS, K_BSLH, K_APST, K_RSFT, ______, ______, ______},
     {K_ESCP, K___F3, K___F6, K___F9, K__F12, K_PAUS, ______}, 
-    {K___F1, K___F4, K___F7, K__F10, K_PRSC, K_PGRM, ______},
+    {K___F1, K___F4, K___F7, K__F10, K_PRSC, K_RSTD, ______},
     {K___F2, K___F5, K___F8, K__F11, K_SLCK, K_KYPD, ______}
   },
   
@@ -235,7 +235,7 @@ int handle_keychange(uint8_t row, uint8_t col, state_t state) {
       showBatteryLevel();  
       break;
     }
-    case K_PGRM: {
+    case K_RSTD: {
       return COMMAND_SHUTDOWN;
     }
     case K_RRST: {
