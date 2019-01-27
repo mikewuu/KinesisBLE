@@ -4,7 +4,7 @@
 #include "battery.h"
 #include "bluetooth.h"
 #include "button.h"
-#include "config.h"-
+#include "config.h"
 #include "keycodes.h"
 #include "keymap.h"
 #include "MCP23S17.h"
