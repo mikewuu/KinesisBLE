@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <bluefruit.h>
+#include <Nffs.h>
 
 #include "config.h"
 #include "keycodes.h"
@@ -25,7 +26,23 @@ void del_mods(uint8_t mods) {
   active_mods &= ~mods;          
 }
 
+void clear_bluetooth_bonds() {
+  Bluefruit.clearBonds();
+  Bluefruit.Central.clearBonds();
+  Nffs.format();
+  #ifdef DEBUG
+    Serial.println("Cleared bluetooth bonds & paired devices");
+  #endif
+}
+
 void send_report_keyboard() {
+
+  // Right shift + left cmd  = 40
+  // esc = 41
+  if(active_mods == 40 && report[0] == 41) {
+    clear_bluetooth_bonds();
+  }
+  
   bool err = blehid.keyboardReport(
     active_mods, report[0], report[1], report[2], report[3], report[4], report[5]
   );
@@ -96,3 +113,4 @@ void init_bluetooth() {
 bool is_bluetooth_connected() {
   return Bluefruit.connected();
 }
+
