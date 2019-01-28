@@ -4,6 +4,7 @@
 
 #include "config.h"
 #include "keycodes.h"
+#include "battery.h"
 
 BLEHidAdafruit blehid;
 BLEDis bledis;
@@ -33,6 +34,16 @@ void clear_bluetooth_bonds() {
   #ifdef DEBUG
     Serial.println("Cleared bluetooth bonds & paired devices");
   #endif
+
+  for (int i = 0; i < 3; i++) {
+    setAllBatteryLed(LOW);
+    delay(150);
+    setAllBatteryLed(HIGH);
+    delay(150);
+  }
+
+  setAllBatteryLed(LOW);
+   
 }
 
 void send_report_keyboard() {

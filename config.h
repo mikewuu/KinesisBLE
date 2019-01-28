@@ -5,7 +5,7 @@
 /**
  * DEBUG MODE
  */
-#define DEBUG
+//#define DEBUG
 
 /**
  * Serial Baudrate
