@@ -24,32 +24,13 @@ state_t get_state(uint8_t row, uint8_t col) {
   return (curr_states[row] >> (col)) & 1;
 }
 
-/**
- * Battery LED on time
- */
+
 int batteryOnTime = MINS_SHOW_BATTERY_LED*60*1000;                       
-
-/**
- * When last key was pressed
- */
 int lastKeypressTimestamp = 0;
-
-/**
- * How long in ms before we put device in deep sleep.
- */
 int inactivityTimeout = MINS_BEFORE_SHUTDOWN*60*1000;   
 
-/**
- * MCP23S17 (Address: 0)
- */
 MCP mcp(0, SPI_SS_PIN); 
 
-/**
- * Charge Flag
- * 
- * Used to check if we were previously charging. ie. USB
- * cable was just unplugged.
- */
 bool charging = false;
 
 void setup(void) {
@@ -75,34 +56,30 @@ void setup(void) {
     /**
      * Initialize Battery Indicator LED(s)
      */
-    pinMode(LED_CAPS_PIN, OUTPUT);
-    pinMode(LED_NUM_PIN, OUTPUT);
-    pinMode(LED_SCR_PIN, OUTPUT);
-    pinMode(LED_KEY_PIN, OUTPUT);
-   
-    showBatteryLevel();
 
-    /**
-     * Disable Unused nRF52 Features
-     */
-    #ifdef DEBUG
-        // DO NOTHING (UART enabled)
-    #else
-        NRF_UARTE0->ENABLE = 0; //disable UART
-    #endif
-    NRF_TWIM1 ->ENABLE = 0; //disable TWI Master
-    NRF_TWIS1 ->ENABLE = 0; //disable TWI Slave
-    NRF_NFCT->TASKS_DISABLE = 1; //disable NFC, confirm this is the right way
-
-    /**
-     * Turn on Power Button LED
-     * 
-     * Turning it on here in the setup means this LED is
-     * always on as long as the keyboard is on.
-     */
-    buttonColor(BLUE);
+  initializeBatteryLedPins();
+  showBatteryLevel();
+  disableExtraFeatures();
+  buttonColor(BLUE);
     
-} // END setup()
+}
+
+void initializeBatteryLedPins() {
+  pinMode(LED_CAPS_PIN, OUTPUT);
+  pinMode(LED_NUM_PIN, OUTPUT);
+  pinMode(LED_SCR_PIN, OUTPUT);
+  pinMode(LED_KEY_PIN, OUTPUT);
+}
+
+void disableExtraFeatures() {
+  #ifndef DEBUG
+    NRF_UARTE0->ENABLE = 0; // disable UART
+  #endif
+  
+  NRF_TWIM1 ->ENABLE = 0; //disable TWI Master
+  NRF_TWIS1 ->ENABLE = 0; //disable TWI Slave
+  NRF_NFCT->TASKS_DISABLE = 1; //disable NFC, confirm this is the right way  
+}
 
 void loop(void) {
 

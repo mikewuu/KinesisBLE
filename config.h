@@ -80,7 +80,7 @@
 #define REST_TIMER
 #define WORK_INTERVAL_MINS    20
 #define REST_INTERVAL_SECS    60
-#define WORK_TIMEOUT_MINS     10
+#define WORK_TIMEOUT_MINS     20
 //#define REST_AUTO_BREAKS
 
 #endif
