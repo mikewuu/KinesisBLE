@@ -68,7 +68,7 @@
  * full. The voltage is lower when charging.
  * 
  */
-#define USB_FULL_MIN_MV 4978 
+#define USB_FULL_MIN_MV 4990 
 
 /**
  * Rest Timer
