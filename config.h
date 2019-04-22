@@ -24,8 +24,8 @@
 
 #define SPI_SS_PIN      27
 
-#define LED_CAPS_PIN    29
-#define LED_NUM_PIN     28
+#define LED_CAPS_PIN    8
+#define LED_NUM_PIN     6
 #define LED_SCR_PIN     26
 #define LED_KEY_PIN     25  
 
