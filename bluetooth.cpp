@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <bluefruit.h>
-#include <Nffs.h>
+//#include <Nffs.h>
 
 #include "config.h"
 #include "keycodes.h"
@@ -30,7 +30,7 @@ void del_mods(uint8_t mods) {
 void clear_bluetooth_bonds() {
   Bluefruit.clearBonds();
   Bluefruit.Central.clearBonds();
-  Nffs.format();
+//  Nffs.format();
   #ifdef DEBUG
     Serial.println("Cleared bluetooth bonds & paired devices");
   #endif
@@ -53,9 +53,11 @@ void send_report_keyboard() {
   if(active_mods == 40 && report[0] == 41) {
     clear_bluetooth_bonds();
   }
-  
+ 
+  uint8_t keyReport [6] = {report[0], report[1], report[2], report[3], report[4], report[5]};   
+   
   bool err = blehid.keyboardReport(
-    active_mods, report[0], report[1], report[2], report[3], report[4], report[5]
+    active_mods, keyReport
   );
 }
 
@@ -93,7 +95,7 @@ void register_keyup(uint16_t keycode) {
 void init_bluetooth() {
 
   Bluefruit.begin();
-  Bluefruit.setName("Kinesis BLE");
+  Bluefruit.setName("Kinesis BLEx");
   Bluefruit.setTxPower(-8);
   Bluefruit.autoConnLed(false);                                 // turn off Blue LED
 
