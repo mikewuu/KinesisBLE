@@ -246,7 +246,7 @@ int handle_keychange(uint8_t row, uint8_t col, state_t state) {
       // Normal keycode
       if (state == DOWN) {
         register_keydown(keycode);
-      } else {
+      } else {      
         register_keyup(keycode);
       }
       break;

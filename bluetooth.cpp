@@ -53,15 +53,39 @@ void send_report_keyboard() {
   if(active_mods == 40 && report[0] == 41) {
     clear_bluetooth_bonds();
   }
+
+  #ifdef DEBUG
+    printKeyReports():
+  #endif
   
   bool err = blehid.keyboardReport(
     active_mods, report[0], report[1], report[2], report[3], report[4], report[5]
   );
 }
 
+void printKeyReports() {
+  Serial.println("mods");
+  Serial.println(active_mods);
+  Serial.println("key0");
+  Serial.println(report[0]);
+  Serial.println("key1");
+  Serial.println(report[1]);
+  Serial.println("key2");
+  Serial.println(report[2]);
+  Serial.println("key3");
+  Serial.println(report[3]);
+  Serial.println("key4");
+  Serial.println(report[4]);
+  Serial.println("key5");
+  Serial.println(report[5]);
+  Serial.println("-----------------------------");
+}
+
 void register_keydown(uint16_t keycode) { 
     add_mods((uint8_t)(keycode >> 8));                        // keycode >> 8 = first byte of keycode (modifier)
 
+    uint8_t keyHexCode = (uint8_t)(keycode & 0xFF);
+    
     for (uint8_t i = 0; i < REPORT_KEYS; i++) {
       // Key already stored there
       if (report[i] == (uint8_t)(keycode & 0xFF)) {           // keycode & 0xFF = last byte of the keycode (key value)
@@ -75,7 +99,8 @@ void register_keydown(uint16_t keycode) {
       }
     }
     
-    send_report_keyboard();
+    send_report_keyboard();  
+    
 }
 
 void register_keyup(uint16_t keycode) {
@@ -93,7 +118,7 @@ void register_keyup(uint16_t keycode) {
 void init_bluetooth() {
 
   Bluefruit.begin();
-  Bluefruit.setName("Kinesis BLE");
+  Bluefruit.setName("Kinesis BLE V4");
   Bluefruit.setTxPower(-8);
   Bluefruit.autoConnLed(false);                                 // turn off Blue LED
 

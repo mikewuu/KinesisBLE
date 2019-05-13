@@ -45,7 +45,7 @@
  * is pressed for the duration of at least 'x' loops until we 
  * recognize it. 
  */
-#define DEBOUNCING_DELAY 2
+#define DEBOUNCING_DELAY 4
 
 /**
  * Sleep Timer
