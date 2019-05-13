@@ -5,7 +5,7 @@
 /**
  * DEBUG MODE
  */
-//#define DEBUG
+#define DEBUG
 
 /**
  * Serial Baudrate
@@ -45,8 +45,7 @@
  * is pressed for the duration of at least 'x' loops until we 
  * recognize it. 
  */
-#define DEBOUNCING_DELAY 4
-
+#define DEBOUNCING_DELAY 3
 /**
  * Sleep Timer
  * 

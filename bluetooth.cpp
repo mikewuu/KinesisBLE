@@ -46,23 +46,6 @@ void clear_bluetooth_bonds() {
    
 }
 
-void send_report_keyboard() {
-
-  // Right shift + left cmd  = 40
-  // esc = 41
-  if(active_mods == 40 && report[0] == 41) {
-    clear_bluetooth_bonds();
-  }
-
-  #ifdef DEBUG
-    printKeyReports():
-  #endif
-  
-  bool err = blehid.keyboardReport(
-    active_mods, report[0], report[1], report[2], report[3], report[4], report[5]
-  );
-}
-
 void printKeyReports() {
   Serial.println("mods");
   Serial.println(active_mods);
@@ -79,6 +62,23 @@ void printKeyReports() {
   Serial.println("key5");
   Serial.println(report[5]);
   Serial.println("-----------------------------");
+}
+
+void send_report_keyboard() {
+
+  // Right shift + left cmd  = 40
+  // esc = 41
+  if(active_mods == 40 && report[0] == 41) {
+    clear_bluetooth_bonds();
+  }
+
+  #ifdef DEBUG
+    printKeyReports();
+  #endif
+  
+  bool err = blehid.keyboardReport(
+    active_mods, report[0], report[1], report[2], report[3], report[4], report[5]
+  );
 }
 
 void register_keydown(uint16_t keycode) { 

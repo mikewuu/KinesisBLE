@@ -111,7 +111,7 @@ void loop(void) {
      * sleeping for 7ms, we're theoretically only using 12.5% of the power we would require
      * if we were to run the loop without the delay.
      */
-    delay(3);
+    delay(4);
  
 } // END loop()
 
