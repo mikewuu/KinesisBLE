@@ -108,8 +108,8 @@ int usbVoltage(void) {
 }  
 
 bool chargingAnimationOn = false;
-int chargingAnimationLastToggle = 0;
-int batteryLedTimer = 0;
+unsigned long chargingAnimationLastToggle = 0;
+unsigned long batteryLedTimer = 0;
 bool batteryLedOn = false;
 
 
@@ -174,7 +174,7 @@ void showBatteryLevel() {
 void batteryChargingAnimation() {
    uint8_t battery = batteryPercentage();
    
-   int now = millis();
+   unsigned long now = millis();
    
    if ( (millis() - chargingAnimationLastToggle) < 700) {
     return;

@@ -38,7 +38,7 @@ inline void unset_layer(uint8_t layer) {
   active_layers &= ~(1 << layer); // Set nth bit to 0 (n = layer)
 }
 
-uint32_t last_pressed = 0;
+unsigned long last_pressed = 0;
 uint8_t pressed_alone = 0;
 #define PRESSED_RAISE 0
 

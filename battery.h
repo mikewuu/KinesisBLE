@@ -12,8 +12,8 @@ bool    usbConnected();
 int     usbVoltage();
 
 extern bool batteryLedOn;
-extern int  batteryLedTimer;
-extern int  chargingAnimationLastToggle;
+extern unsigned long  batteryLedTimer;
+extern unsigned long  chargingAnimationLastToggle;
 extern bool chargingAnimationOn;
 
 void showBatteryLevel();

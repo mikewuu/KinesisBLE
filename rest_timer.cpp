@@ -2,7 +2,7 @@
 #include "battery.h"
 #include "config.h"
 
-int  timeLastBreak = 0;             // Timestamp of end of last break
+unsigned long  timeLastBreak = 0;             // Timestamp of end of last break
 bool onBreak = false;               // Already taking a break
 bool restLedOn = false;             // Toggle LED state
 int  timeLastRestLedToggle = 0;     // Timer to flash LED
@@ -34,14 +34,14 @@ void indicateNeedBreak(int now) {
 /**
  * Check if user has taken a break.
  */
-bool hasTakenBreak(int now, int lastKeypressTimestamp) {
+bool hasTakenBreak(unsigned long now, unsigned long lastKeypressTimestamp) {
     return now - lastKeypressTimestamp > REST_INTERVAL_SECS*1000;
 }
 
 /**
  * Check if user is already on break / afk.
  */
-bool awayFromKeyboard(int now, int lastKeypressTimestamp) {
+bool awayFromKeyboard(unsigned long now, unsigned long lastKeypressTimestamp) {
   return now - lastKeypressTimestamp >  WORK_TIMEOUT_MINS*60*1000;
 }
 
@@ -49,7 +49,7 @@ bool awayFromKeyboard(int now, int lastKeypressTimestamp) {
  *  Has the user pressed a key since the last time they
  *  went on break?
  */
-bool backFromBreak(int timeLastBreak, int lastKeypressTimestamp) {
+bool backFromBreak(unsigned long timeLastBreak, unsigned long lastKeypressTimestamp) {
   return lastKeypressTimestamp > timeLastBreak;
 }
 
@@ -57,7 +57,7 @@ bool backFromBreak(int timeLastBreak, int lastKeypressTimestamp) {
  * If we have been working for longer than our set work interval limit,
  * we should take a break.
  */
-bool needsBreak(int now, int timeLastBreak) {
+bool needsBreak(unsigned long now, unsigned long timeLastBreak) {
   return now - timeLastBreak > WORK_INTERVAL_MINS*60*1000;
 }
 
@@ -74,9 +74,9 @@ void start_break() {
 /**
  * Rest Timer
  */
-void process_rest_timer(int lastKeypressTimestamp) {
+void process_rest_timer(unsigned long lastKeypressTimestamp) {
   
-    int now = millis(); 
+    unsigned long now = millis(); 
 
     if( onBreak && backFromBreak(timeLastBreak, lastKeypressTimestamp) ) {
       onBreak = false;
@@ -87,7 +87,7 @@ void process_rest_timer(int lastKeypressTimestamp) {
     }
 
     if(needsBreak(now,timeLastBreak)) {
-     
+
         indicateNeedBreak(now);
 
         #ifdef REST_AUTO_BREAKS

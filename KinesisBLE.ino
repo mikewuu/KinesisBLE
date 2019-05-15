@@ -25,9 +25,9 @@ state_t get_state(uint8_t row, uint8_t col) {
 }
 
 
-int batteryOnTime = MINS_SHOW_BATTERY_LED*60*1000;                       
-int lastKeypressTimestamp = 0;
-int inactivityTimeout = MINS_BEFORE_SHUTDOWN*60*1000;   
+unsigned long batteryOnTime = MINS_SHOW_BATTERY_LED*60*1000;                       
+unsigned long lastKeypressTimestamp = 0;
+unsigned long inactivityTimeout = MINS_BEFORE_SHUTDOWN*60*1000;   
 
 MCP mcp(0, SPI_SS_PIN); 
 
@@ -258,7 +258,7 @@ void check_row_states() {
  * Check if keyboard has been inactive long enough to be
  * put into deep-sleep mode.
  */
-bool shouldEnterDeepSleep(int lastKeypressTimestamp){
+bool shouldEnterDeepSleep(unsigned long lastKeypressTimestamp){
   return millis() - lastKeypressTimestamp > inactivityTimeout;
 }
 
