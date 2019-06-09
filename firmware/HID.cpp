@@ -211,7 +211,7 @@ HID::HID(void)
 
 void HID::begin(void) {
   Bluefruit.begin();
-  Bluefruit.setName("FeatherCtrl");
+  Bluefruit.setName("KinesisBLE");
   Bluefruit.setTxPower(-8);
   Bluefruit.autoConnLed(false);
 
