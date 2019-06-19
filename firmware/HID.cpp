@@ -212,7 +212,7 @@ HID::HID(void)
 void HID::begin(void) {
   Bluefruit.begin();
   Bluefruit.setName("KinesisBLE");
-  Bluefruit.setTxPower(-8);
+  Bluefruit.setTxPower(0);
   Bluefruit.autoConnLed(false);
 
   bleDIS.setManufacturer("TODO");
