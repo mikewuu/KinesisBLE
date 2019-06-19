@@ -41,7 +41,7 @@ class Matrix {
 
     static const uint8_t rowPins[];
     static const uint8_t colPins[];
-    static const uint8_t debounceTime = 5;    
+    static const uint8_t debounceTime = 10;    
 };
 
 #endif

@@ -8,6 +8,7 @@ Keyboard::Keyboard(void)
 void Keyboard::begin(void) {
   hid.begin();
   matrix.begin();
+  led.begin();
 }
 
 void Keyboard::update(void) {

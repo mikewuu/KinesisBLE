@@ -8,6 +8,7 @@ class LED {
     LED(void);
     void begin(void);
     void offAll(void);
+    void flashPowerButton(void);
   private:
     static const uint8_t POWER_BUTTON_PIN = 5;
     static const uint8_t powerButtonBrightness = 175;

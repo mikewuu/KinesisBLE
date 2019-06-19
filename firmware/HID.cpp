@@ -268,6 +268,8 @@ void HID::sendKeys(
         report.modifier |= modifers[(int)HID::Mod::RAlt]; break;
       case Keymap::Key::RShift:
         report.modifier |= modifers[(int)HID::Mod::RShift]; break;
+      case Keymap::Key::SR5:
+        report.modifier |= modifers[(int)HID::Mod::RCtrl]; break;
       case Keymap::Key::SR6:
         report.modifier |= modifers[(int)HID::Mod::RCmd]; break;
       case Keymap::Key::Grave:
