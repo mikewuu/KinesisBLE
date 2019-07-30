@@ -1,7 +1,7 @@
 #include "Keyboard.h"
 
 Keyboard::Keyboard(void)
-: matrix(), keymap(), hid() {
+: matrix(), keymap(), hid(), power() {
   idleTime = 0;
 }
 

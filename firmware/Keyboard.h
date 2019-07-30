@@ -5,6 +5,7 @@
 #include "KeyMap.h"
 #include "HID.h"
 #include "LED.h"
+#include "Power.h"
 
 class Keyboard {
   public:
@@ -18,6 +19,7 @@ class Keyboard {
     Keymap keymap;
     HID hid;
     LED led;
+    Power power;
     unsigned long idleTime;
 
     static const uint8_t sleepMinutes = 10;
