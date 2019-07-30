@@ -21,6 +21,11 @@ class Keyboard {
     LED led;
     Power power;
     unsigned long idleTime;
+    void processBatteryLEDs(void);
+    void showBatteryLevel(void);
+    unsigned long batteryLEDTime;
+    bool batteryLEDsOn;
+    unsigned long batteryLEDOnDuration;
 
     static const uint8_t sleepMinutes = 10;
 };

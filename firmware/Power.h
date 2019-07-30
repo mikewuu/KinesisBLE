@@ -4,8 +4,11 @@
 #include <bluefruit.h>
 
 class Power {
+  
   public:
     Power(void);
+    uint8_t batteryRemainingPercentage(void);
+    
   private:
     const float MV_PER_LSB = 0.73242188F;
     const float VBAT_DIVIDER = 0.71275837F;
@@ -26,7 +29,6 @@ class Power {
 
     int VBATReading(void);
     uint8_t percentageFrom(float mvolts);
-    uint8_t batteryRemainingPercentage(void);
     int batteryMv(void);
     bool  usbConnected(void);
     int usbRawVoltage(void);

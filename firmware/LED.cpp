@@ -1,7 +1,12 @@
 #include "LED.h"
 
 
-LED::LED(void) {}
+LED::LED(void) {
+  pinMode(CAPS_PIN, OUTPUT);
+  pinMode(NUM_PIN, OUTPUT);
+  pinMode(SCR_PIN, OUTPUT);
+  pinMode(KEY_PIN, OUTPUT);
+}
 
 void LED::begin(void) {
   powerButtonOn();
@@ -32,4 +37,34 @@ void LED::setLED(int pin, bool state) {
   } else {
     analogWrite(pin, 0);
   }
+}
+
+void LED::numLEDsOn(int num) {
+    if(num == 4) {
+    setLED(CAPS_PIN, HIGH);
+    setLED(NUM_PIN, HIGH);
+    setLED(SCR_PIN, HIGH);
+    setLED(KEY_PIN, HIGH);
+   } else if (num == 3) {
+    setLED(CAPS_PIN, HIGH);
+    setLED(NUM_PIN, HIGH);
+    setLED(SCR_PIN, HIGH);
+    setLED(KEY_PIN, LOW);
+   } else if (num == 2) {
+    setLED(CAPS_PIN, HIGH);
+    setLED(NUM_PIN, HIGH);
+    setLED(SCR_PIN, LOW);
+    setLED(KEY_PIN, LOW);
+   } else if (num == 1) {
+    setLED(CAPS_PIN, HIGH);
+    setLED(NUM_PIN, LOW);
+    setLED(SCR_PIN, LOW);
+    setLED(KEY_PIN, LOW);
+   } else if (num == 0) {
+    setLED(CAPS_PIN, LOW);
+    setLED(NUM_PIN, LOW);
+    setLED(SCR_PIN, LOW);
+    setLED(KEY_PIN, LOW);
+   }
+   
 }

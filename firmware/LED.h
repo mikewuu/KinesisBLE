@@ -16,6 +16,7 @@ class LED {
     void offAll(void);
     void setLED(int pin, bool state);
     void setAllLEDs(bool state);
+    void numLEDsOn(int num);
   private:
   
     const uint8_t POWER_BUTTON_PIN = 5;    
