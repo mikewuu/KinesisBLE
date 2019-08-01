@@ -31,7 +31,6 @@ void RestTimer::process(unsigned long idleTime) {
   if(backFromBreak(idleTime)) {
     onBreak = false;  
     breakNumber++;
-    Serial.println("back from break");
   }
 
   if(onBreak) {
@@ -41,7 +40,6 @@ void RestTimer::process(unsigned long idleTime) {
   if(needsBreak && hasTakenBreakForPeriod(idleTime)) {
     onBreak = true;
     needsBreak = false;
-    Serial.println("taken break");    
     lastBreakTime = millis();
   }
   

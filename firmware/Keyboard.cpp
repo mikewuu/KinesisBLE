@@ -65,10 +65,8 @@ void Keyboard::restCheck(void) {
 
   if(restTimer.getNeedsBreak()) {
     if(restTimer.isShortBreakPeriod()) {
-      Serial.println("take short break");
       led.flashWithSpeed(LOW); 
     } else {
-      Serial.println("take long break");
       led.flashWithSpeed(HIGH);
     }
   } else {
