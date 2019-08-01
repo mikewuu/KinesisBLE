@@ -2,9 +2,9 @@
 
 RestTimer::RestTimer(void){
 
-  workIntervalMs = 0.083 * 60 * 1000;  
-  shortBreakDurationMs = 0.167 * 60 * 1000;
-  longBreakDurationMs = 0.32 * 60 * 1000;
+  workIntervalMs = 25 * 60 * 1000;  
+  shortBreakDurationMs = 3 * 60 * 1000;
+  longBreakDurationMs = 20 * 60 * 1000;
   needsBreak = false;
 
   lastBreakTime = 0;
