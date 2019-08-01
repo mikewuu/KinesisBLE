@@ -6,6 +6,7 @@ LED::LED(void) {
   pinMode(NUM_PIN, OUTPUT);
   pinMode(SCR_PIN, OUTPUT);
   pinMode(KEY_PIN, OUTPUT);
+  onTime = 0;
 }
 
 void LED::begin(void) {
@@ -14,6 +15,7 @@ void LED::begin(void) {
 
 void LED::offAll(void) {
   powerButtonOff();
+  LEDsOff();
 }
 
 void LED::powerButtonOn(void) {
@@ -39,7 +41,12 @@ void LED::setLED(int pin, bool state) {
   }
 }
 
-void LED::numLEDsOn(int num) {
+void LED::numLEDsOnForDuration(int num, unsigned long duration) {
+  
+    shouldTurnOffAfterDuration = true;
+    onTime = millis();
+    onDuration = duration;
+    
     if(num == 4) {
     setLED(CAPS_PIN, HIGH);
     setLED(NUM_PIN, HIGH);
@@ -67,4 +74,19 @@ void LED::numLEDsOn(int num) {
     setLED(KEY_PIN, LOW);
    }
    
+}
+
+void LED::process(void) {
+  if(shouldTurnOffAfterDuration) {    
+    unsigned long now = millis();
+    bool shouldTurnOffLEDs =  now - onTime > onDuration;
+    if (shouldTurnOffLEDs) {
+      LEDsOff();
+    }  
+  }
+}
+
+void LED::LEDsOff() {
+  setAllLEDs(LOW);
+  shouldTurnOffAfterDuration = false;
 }

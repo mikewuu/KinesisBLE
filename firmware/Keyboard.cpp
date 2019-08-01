@@ -3,15 +3,15 @@
 Keyboard::Keyboard(void)
 : matrix(), keymap(), hid(), power() {
   idleTime = 0;
-  batteryLEDsOn = false;
-  batteryLEDOnDuration = 3 * 60 * 1000;
+  int batterLEDOnMinutes = 3;
+  batteryLEDOnDuration = batterLEDOnMinutes * 60 * 1000;
 }
 
 void Keyboard::begin(void) {
   hid.begin();
   matrix.begin();
   led.begin();
-  showBatteryLevel();
+  indicateBatteryLevel();
 }
 
 void Keyboard::update(void) {
@@ -23,7 +23,7 @@ void Keyboard::update(void) {
     hid.sendKeys(&keymap);
   }
 
-  processBatteryLEDs();
+  led.process();
 
   sleepCheck();
 }
@@ -44,31 +44,18 @@ void Keyboard::sleepCheck(void) {
   }
 }
 
-void Keyboard::processBatteryLEDs(void) {
 
-  bool shouldTurnOffBatteryLEDs = batteryLEDsOn && ((millis() - batteryLEDTime) > batteryLEDOnDuration);
-  if (shouldTurnOffBatteryLEDs) {
-    led.numLEDsOn(0);
-  }
-  
-}
-
-
-void Keyboard::showBatteryLevel(void) {
+void Keyboard::indicateBatteryLevel(void) {
   
   uint8_t percentage = power.batteryRemainingPercentage();
   
   if(percentage > 75) {
-    led.numLEDsOn(4);
+    led.numLEDsOnForDuration(4, batteryLEDOnDuration);
    } else if (percentage > 50) {
-    led.numLEDsOn(3);
+    led.numLEDsOnForDuration(3, batteryLEDOnDuration);
    } else if (percentage > 25) {
-    led.numLEDsOn(2);
+    led.numLEDsOnForDuration(2, batteryLEDOnDuration);
    } else {
-    led.numLEDsOn(1);
-   }
-   
-   batteryLEDsOn = true;
-   batteryLEDTime = millis();
-  
+    led.numLEDsOnForDuration(1, batteryLEDOnDuration);
+   }  
 }

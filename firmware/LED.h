@@ -13,17 +13,21 @@ class LED {
     
     LED(void);
     void begin(void);
+    void numLEDsOnForDuration(int num, unsigned long duration);
+    void process(void);
     void offAll(void);
-    void setLED(int pin, bool state);
-    void setAllLEDs(bool state);
-    void numLEDsOn(int num);
   private:
   
     const uint8_t POWER_BUTTON_PIN = 5;    
     const uint8_t powerButtonBrightness = 175;
-    
+    bool shouldTurnOffAfterDuration;
+    unsigned long onTime;
+    unsigned long onDuration;
+    void setLED(int pin, bool state);
+    void setAllLEDs(bool state);
     void powerButtonOn(void);
     void powerButtonOff(void);
+    void LEDsOff(void);
 };
 
 
