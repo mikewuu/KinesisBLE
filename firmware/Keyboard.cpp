@@ -63,17 +63,15 @@ void Keyboard::restCheck(void) {
 
   restTimer.process(idleTime);
 
-  if(restTimer.shouldTakeShortBreak(idleTime)) {
-    Serial.println("take short break");
-    led.flashWithSpeed(LOW);
-  }
-
-  if(restTimer.shouldTakeLongBreak(idleTime)) {
-    Serial.println("take long break");
-    led.flashWithSpeed(HIGH);
-  }
-
-  if(restTimer.hasTakenBreak(idleTime)) {
+  if(restTimer.getNeedsBreak()) {
+    if(restTimer.isShortBreakPeriod()) {
+      Serial.println("take short break");
+      led.flashWithSpeed(LOW); 
+    } else {
+      Serial.println("take long break");
+      led.flashWithSpeed(HIGH);
+    }
+  } else {
     led.stopFlashing();
   }
  
