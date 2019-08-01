@@ -12,6 +12,7 @@ void Keyboard::begin(void) {
   matrix.begin();
   led.begin();
   indicateBatteryLevel();
+  led.flashWithSpeed(HIGH);
 }
 
 void Keyboard::update(void) {

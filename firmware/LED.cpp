@@ -7,6 +7,10 @@ LED::LED(void) {
   pinMode(SCR_PIN, OUTPUT);
   pinMode(KEY_PIN, OUTPUT);
   onTime = 0;
+  isFlashing = false;
+  lastFlashTime = 0;
+  slowFlashGap = 1000;
+  fastFlashGap = 200;
 }
 
 void LED::begin(void) {
@@ -77,6 +81,7 @@ void LED::numLEDsOnForDuration(int num, unsigned long duration) {
 }
 
 void LED::process(void) {
+  
   if(shouldTurnOffAfterDuration) {    
     unsigned long now = millis();
     bool shouldTurnOffLEDs =  now - onTime > onDuration;
@@ -84,9 +89,33 @@ void LED::process(void) {
       LEDsOff();
     }  
   }
+
+  if(isFlashing) {
+    unsigned long now = millis();
+    unsigned long flashGap = flashSpeed == HIGH ? fastFlashGap : slowFlashGap;
+    bool shouldToggleFlashState = now - lastFlashTime > flashGap;
+    if(shouldToggleFlashState) {
+      
+      lastFlashTime = now;
+      if(flashingLedOn) {
+        setAllLEDs(LOW);
+        flashingLedOn = false;
+      } else {
+        setAllLEDs(HIGH);
+        flashingLedOn = true;
+      }      
+      
+    }
+  }
 }
 
 void LED::LEDsOff() {
   setAllLEDs(LOW);
+  shouldTurnOffAfterDuration = false;
+}
+
+void LED::flashWithSpeed(bool speed) {
+  isFlashing = true;
+  flashSpeed = speed;
   shouldTurnOffAfterDuration = false;
 }
