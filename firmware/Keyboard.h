@@ -6,13 +6,15 @@
 #include "HID.h"
 #include "LED.h"
 #include "Power.h"
+#include "RestTimer.h"
 
 class Keyboard {
   public:
     Keyboard(void);
     void begin(void);
     void update(void);
-    void sleepCheck(void);
+    void restCheck(void);
+    void sleepCheck(void);    
 
   private:
     Matrix matrix;
@@ -20,6 +22,7 @@ class Keyboard {
     HID hid;
     LED led;
     Power power;
+    RestTimer restTimer;
     unsigned long idleTime;
     void indicateBatteryLevel(void);
     unsigned long batteryLEDOnDuration;

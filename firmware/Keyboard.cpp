@@ -1,7 +1,7 @@
 #include "Keyboard.h"
 
 Keyboard::Keyboard(void)
-: matrix(), keymap(), hid(), power() {
+: matrix(), keymap(), hid(), power(), restTimer() {
   idleTime = 0;
   int batterLEDOnMinutes = 3;
   batteryLEDOnDuration = batterLEDOnMinutes * 60 * 1000;
@@ -12,7 +12,6 @@ void Keyboard::begin(void) {
   matrix.begin();
   led.begin();
   indicateBatteryLevel();
-  led.flashWithSpeed(HIGH);
 }
 
 void Keyboard::update(void) {
@@ -25,8 +24,23 @@ void Keyboard::update(void) {
   }
 
   led.process();
-
+  restCheck();
   sleepCheck();
+}
+
+void Keyboard::indicateBatteryLevel(void) {
+  
+  uint8_t percentage = power.batteryRemainingPercentage();
+  
+  if(percentage > 75) {
+    led.numLEDsOnForDuration(4, batteryLEDOnDuration);
+   } else if (percentage > 50) {
+    led.numLEDsOnForDuration(3, batteryLEDOnDuration);
+   } else if (percentage > 25) {
+    led.numLEDsOnForDuration(2, batteryLEDOnDuration);
+   } else {
+    led.numLEDsOnForDuration(1, batteryLEDOnDuration);
+   }  
 }
 
 void Keyboard::sleepCheck(void) {
@@ -45,18 +59,22 @@ void Keyboard::sleepCheck(void) {
   }
 }
 
+void Keyboard::restCheck(void) {
 
-void Keyboard::indicateBatteryLevel(void) {
-  
-  uint8_t percentage = power.batteryRemainingPercentage();
-  
-  if(percentage > 75) {
-    led.numLEDsOnForDuration(4, batteryLEDOnDuration);
-   } else if (percentage > 50) {
-    led.numLEDsOnForDuration(3, batteryLEDOnDuration);
-   } else if (percentage > 25) {
-    led.numLEDsOnForDuration(2, batteryLEDOnDuration);
-   } else {
-    led.numLEDsOnForDuration(1, batteryLEDOnDuration);
-   }  
+  restTimer.process(idleTime);
+
+  if(restTimer.shouldTakeShortBreak(idleTime)) {
+    Serial.println("take short break");
+    led.flashWithSpeed(LOW);
+  }
+
+  if(restTimer.shouldTakeLongBreak(idleTime)) {
+    Serial.println("take long break");
+    led.flashWithSpeed(HIGH);
+  }
+
+  if(restTimer.hasTakenBreak(idleTime)) {
+    led.stopFlashing();
+  }
+ 
 }

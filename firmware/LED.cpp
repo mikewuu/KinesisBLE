@@ -115,7 +115,16 @@ void LED::LEDsOff() {
 }
 
 void LED::flashWithSpeed(bool speed) {
-  isFlashing = true;
-  flashSpeed = speed;
-  shouldTurnOffAfterDuration = false;
+  if(!isFlashing || speed != flashSpeed) {
+    isFlashing = true;
+    flashSpeed = speed;
+    shouldTurnOffAfterDuration = false; 
+  }
+}
+
+void LED::stopFlashing(void) {
+  if(isFlashing) {
+    isFlashing = false;
+    LEDsOff(); 
+  }
 }
