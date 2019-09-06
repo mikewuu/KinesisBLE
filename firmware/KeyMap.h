@@ -21,7 +21,7 @@ class Keymap {
 
       PrintScr, ScrollLock, Pause, Home, PgUp, Del, End, PgDn, Right, Left, Down, Up,
 
-      Capslock, Insert, SL1, SL4, SR1, SR3, SR4, 
+      Capslock, Insert, SL1, SL4, SR1, SR3, SR4, PG,
       
       LShift, RShift, SL2, SL3, SL5, SL6, SR2, SR5, SR6,
 

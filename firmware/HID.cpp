@@ -80,7 +80,8 @@ const uint8_t HID::scancodes[] = {
   [(int)Scancode::Left] = 0x50,
   [(int)Scancode::Down] = 0x51,
   [(int)Scancode::Up] = 0x52,
-  [(int)Scancode::Capslock] = 0x39 
+  [(int)Scancode::Capslock] = 0x39,
+  [(int)Scancode::Hyper] = 0x6D 
 };
 
 const uint8_t HID::modifers[] = {
@@ -196,13 +197,15 @@ const HID::KeyInfo HID::scancodeMap[] = {
   [(int)Keymap::Key::Down] = { .scancode = Scancode::Down, .shift = false },
   [(int)Keymap::Key::Up] = { .scancode = Scancode::Up, .shift = false },
 
-  [(int)Keymap::Key::Capslock] = { .scancode = Scancode::Capslock, .shift = false },
+  [(int)Keymap::Key::Capslock] = { .scancode = Scancode::Esc, .shift = false },
   [(int)Keymap::Key::Insert] = { .scancode = Scancode::BSlash, .shift = false },
   [(int)Keymap::Key::SL1] = { .scancode = Scancode::Equal, .shift = false },
   [(int)Keymap::Key::SL4] = { .scancode = Scancode::BSpace, .shift = false },
   [(int)Keymap::Key::SR1] = { .scancode = Scancode::Minus, .shift = false },
   [(int)Keymap::Key::SR3] = { .scancode = Scancode::Enter, .shift = false },
   [(int)Keymap::Key::SR4] = { .scancode = Scancode::Space, .shift = false },
+  
+  [(int)Keymap::Key::PG] = { .scancode = Scancode::Hyper, .shift = false },
 };
 
 HID::HID(void)

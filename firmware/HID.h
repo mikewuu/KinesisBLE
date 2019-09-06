@@ -24,7 +24,7 @@ class HID {
 
       Home, PgUp, Del, End, PgDn, Right, Left, Down, Up, 
       
-      Capslock,
+      Capslock, Hyper,
       
       Count,
       None

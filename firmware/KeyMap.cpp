@@ -9,7 +9,7 @@ const Keymap::Key Keymap::layout[][(int)Matrix::Dim::Row][(int)Matrix::Dim::Col]
     { Key::Capslock,   Key::A,     Key::S,      Key::D,      Key::F,     Key::G,     Key::H,     Key::J,      Key::K,     Key::L,      Key::Semicolon, Key::SQuote,  Key::F6,   Key::F7,       Key::F8 },
     { Key::LShift,     Key::Z,     Key::X,      Key::C,      Key::V,     Key::B,     Key::N,     Key::M,      Key::Comma, Key::Period, Key::Slash,     Key::RShift,  Key::F9,   Key::F10,      Key::F11 },
     { Key::None,       Key::Grave, Key::Insert, Key::Left,   Key::None,  Key::Right, Key::Up,    Key::None,   Key::Down,  Key::LBrace, Key::RBrace,    Key::None,    Key::F12,  Key::None,     Key::None },
-    { Key::None,       Key::None,  Key::SL1,    Key::SL2,    Key::None,  Key::SL5,   Key::SR4,   Key::SR3,    Key::SR6,   Key::None,   Key::None,      Key::None,    Key::None, Key::None,     Key::None },
+    { Key::None,       Key::None,  Key::SL1,    Key::SL2,    Key::None,  Key::SL5,   Key::SR4,   Key::SR3,    Key::SR6,   Key::None,   Key::None,      Key::None,    Key::None, Key::PG,     Key::None },
     { Key::None,       Key::None,  Key::None,   Key::SL4,    Key::None,   Key::SL6,   Key::SR1,   Key::None,   Key::SR2,   Key::SR5,  Key::None,      Key::None,    Key::None, Key::None,     Key::None }
   },
   [(int)Layer::Sym] = {
