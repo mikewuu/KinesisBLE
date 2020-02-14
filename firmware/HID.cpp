@@ -214,7 +214,7 @@ HID::HID(void)
 
 void HID::begin(void) {
   Bluefruit.begin();
-  Bluefruit.setName("Kinesis Advantage 2");
+  Bluefruit.setName("Kinesis Adv2 v5");
   Bluefruit.setTxPower(0);
   Bluefruit.autoConnLed(false);
 

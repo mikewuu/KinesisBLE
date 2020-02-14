@@ -4,14 +4,14 @@
 #include <Arduino.h>
 
 const uint8_t Matrix::rowPins[] = {
-  4, 3, 2, 16, 15, 7, 11
+  A2, A1, A0, 13, 12, 11, 10
 };
 
 const uint8_t Matrix::colPins[] = {
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 };
 
-MCP mcp(0, 27); 
+MCP mcp(0, 5); 
 
 Matrix::Matrix(void) {
   memset(keys, 0, sizeof(keys));
