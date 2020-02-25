@@ -111,6 +111,7 @@ void Matrix::sleep(void) {
   }
 
   for (auto r = 0; r < (int)Matrix::Dim::Row; r++) {
-      NRF_GPIO->PIN_CNF[rowPins[r]] |= ((uint32_t) GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
+//      NRF_GPIO->PIN_CNF[rowPins[r]] |= ((uint32_t) GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
+      nrf_gpio_cfg_sense_input(g_ADigitalPinMap[rowPins[r]], NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
   }
 }
