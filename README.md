@@ -1,8 +1,8 @@
 # Wireless Kinesis Advantage BLE (Bluetooth Low Energy)
 
-Firmware for a custom controller to turn the [Kinesis Keyboard](https://www.kinesis-ergo.com/shop/advantage2/) wireless. Written for the Adafruit nRF52 Feather Arduino board, which is built on Nordic's nRF52 SOC bluetooth module. 
+Turns the [Kinesis Advantage Keyboard](https://www.kinesis-ergo.com/shop/advantage2/) keyboard into a wireless BLE keyboard with a few extra features. Built with Adafruit's nRF52 Feather Arduino boards.
 
-For build instructions, check out the **[project](https://hackaday.io/project/161578-wireless-ble-kinesis-advantage-custom-controller)**.
+For instructions, check out the **[project](https://hackaday.io/project/161578-wireless-ble-kinesis-advantage-custom-controller)**.
 
 
 ## Many thanks to
