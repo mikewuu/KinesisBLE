@@ -2,21 +2,7 @@
 
 Firmware for a custom controller to turn the [Kinesis Keyboard](https://www.kinesis-ergo.com/shop/advantage2/) wireless. Written for the Adafruit nRF52 Feather Arduino board, which is built on Nordic's nRF52 SOC bluetooth module. 
 
-**If you're brave enough to try this, read the [project](https://hackaday.io/project/161578-wireless-ble-kinesis-advantage-custom-controller) first!**
-
-## Which Branch?
-
-master
-
-## Board Versions
-
-V4 (SPI, current) - Single LED Power button (no RGB).
-
-~~V3 (SPI) - This board still has RGB power led that shows yellow for charging / green when full. But using the Tx/Rx pins results in some buggy behavior for the LED(s).~~
-
-~~V2 (i2c) - Swapped pins from TX/RX but we're still using i2c (MCP23017) chip which isn't that fast and limits the power savings of the board (runs at 5-7mA).~~
-
-~~V1 (i2c) - Uses TX/RX and has high current leak.~~
+For build instructions, check out the **[project](https://hackaday.io/project/161578-wireless-ble-kinesis-advantage-custom-controller)**.
 
 
 ## Many thanks to
