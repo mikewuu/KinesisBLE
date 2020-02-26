@@ -300,8 +300,7 @@ void HID::sendKeys(
     }
   }
 
-  if (memcmp(&report, &oldReport, sizeof(report))) {    
-    bleHID.keyboardReport(&report);      
+  if (memcmp(&report, &oldReport, sizeof(report))) {        
     if(usb_hid.ready()) {
       usb_hid.keyboardReport(0, report.modifier, report.keycode);
     } else {
