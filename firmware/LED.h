@@ -21,7 +21,7 @@ class LED {
     
   private:
 
-    const uint8_t POWER_BUTTON_PIN = 5;    
+    const uint8_t POWER_BUTTON_PIN = A5;    
     const uint8_t powerButtonBrightness = 175;
     bool shouldTurnOffAfterDuration;
     unsigned long onTime;
