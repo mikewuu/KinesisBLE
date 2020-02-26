@@ -1,6 +1,7 @@
 #include "HID.h"
 
 #include <Arduino.h>
+#include "Adafruit_TinyUSB.h"
 
 const uint8_t HID::scancodes[] = {
   [(int)Scancode::A] = 0x4,
@@ -212,9 +213,15 @@ HID::HID(void)
   memset(&report, 0, sizeof(report));
 }
 
+uint8_t const desc_hid_report[] =
+{
+  TUD_HID_REPORT_DESC_KEYBOARD(),
+};
+Adafruit_USBD_HID usb_hid;
+
 void HID::begin(void) {
   Bluefruit.begin();
-  Bluefruit.setName("Kinesis Advantage 2");
+  Bluefruit.setName("Kinesis BLEx");
   Bluefruit.setTxPower(0);
   Bluefruit.autoConnLed(false);
 
@@ -236,6 +243,10 @@ void HID::begin(void) {
   Bluefruit.Advertising.setInterval(32, 244);
   Bluefruit.Advertising.setFastTimeout(30);
   Bluefruit.Advertising.start(0);
+
+  usb_hid.setPollInterval(2);
+  usb_hid.setReportDescriptor(desc_hid_report, sizeof(desc_hid_report));
+  usb_hid.begin(); 
 }
 
 void HID::sendKeys(
@@ -289,7 +300,11 @@ void HID::sendKeys(
     }
   }
 
-  if (memcmp(&report, &oldReport, sizeof(report))) {       
-    bleHID.keyboardReport(&report);
+  if (memcmp(&report, &oldReport, sizeof(report))) {        
+    if(usb_hid.ready()) {
+      usb_hid.keyboardReport(0, report.modifier, report.keycode);
+    } else {
+      bleHID.keyboardReport(&report);      
+    }
   }
 }

@@ -8,7 +8,7 @@ void setup(void) {
 #if DEBUG
   Serial.begin(9600);
 #endif
-  keyboard.begin(); 
+  keyboard.begin();
 }
 
 void loop(void) {  

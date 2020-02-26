@@ -6,10 +6,10 @@
 class LED {
   public:
   
-    const static uint8_t CAPS_PIN = 29;
-    const static uint8_t NUM_PIN = 28;
-    const static uint8_t SCR_PIN = 26;
-    const static uint8_t KEY_PIN = 25; 
+    const static uint8_t CAPS_PIN = A3;
+    const static uint8_t NUM_PIN = A4;
+    const static uint8_t SCR_PIN = 9;
+    const static uint8_t KEY_PIN = 6; 
     
     LED(void);
     void begin(void);
@@ -21,7 +21,7 @@ class LED {
     
   private:
 
-    const uint8_t POWER_BUTTON_PIN = 5;    
+    const uint8_t POWER_BUTTON_PIN = A5;    
     const uint8_t powerButtonBrightness = 175;
     bool shouldTurnOffAfterDuration;
     unsigned long onTime;

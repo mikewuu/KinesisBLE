@@ -4,14 +4,14 @@
 #include <Arduino.h>
 
 const uint8_t Matrix::rowPins[] = {
-  4, 3, 2, 16, 15, 7, 11
+  A2, A1, A0, 13, 12, 11, 10
 };
 
 const uint8_t Matrix::colPins[] = {
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 };
 
-MCP mcp(0, 27); 
+MCP mcp(0, 5); 
 
 Matrix::Matrix(void) {
   memset(keys, 0, sizeof(keys));
@@ -111,6 +111,7 @@ void Matrix::sleep(void) {
   }
 
   for (auto r = 0; r < (int)Matrix::Dim::Row; r++) {
-      NRF_GPIO->PIN_CNF[rowPins[r]] |= ((uint32_t) GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
+//      NRF_GPIO->PIN_CNF[rowPins[r]] |= ((uint32_t) GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos);
+      nrf_gpio_cfg_sense_input(g_ADigitalPinMap[rowPins[r]], NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
   }
 }
