@@ -24,7 +24,11 @@ void Keyboard::update(void) {
   }
 
   led.process();
+
+  #if REST_TIMER
   restCheck();
+  #endif
+  
   sleepCheck();
 }
 
