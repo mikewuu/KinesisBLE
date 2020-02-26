@@ -10,6 +10,7 @@ class HID {
     HID(void);
     void begin(void);
     void sendKeys(const Keymap *km);
+    bool isUSB(void);
   private:
 
     enum class Scancode : uint8_t {

@@ -48,6 +48,11 @@ void Keyboard::indicateBatteryLevel(void) {
 }
 
 void Keyboard::sleepCheck(void) {
+
+  if(hid.isUSB()) {
+    return;
+  }
+  
   if ((millis() - idleTime) > (sleepMinutes * 60 * 1000)) {
     led.offAll();
     matrix.sleep();    

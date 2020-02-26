@@ -308,3 +308,7 @@ void HID::sendKeys(
     }
   }
 }
+
+bool HID::isUSB(void) {
+  return usb_hid.ready();
+}
