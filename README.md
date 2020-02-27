@@ -2,7 +2,7 @@
 
 Turns the [Kinesis Advantage Keyboard](https://www.kinesis-ergo.com/shop/advantage2/) keyboard into a wireless BLE keyboard with a few extra features. Built with Adafruit's nRF52 Feather Arduino boards.
 
-For instructions, check out the **[project](https://hackaday.io/project/161578-wireless-ble-kinesis-advantage-custom-controller)**.
+For instructions, see the **[wiki](https://github.com/sysdevmike/KinesisBLE/wiki)**. For more details on the build check out the **[project](https://hackaday.io/project/161578-wireless-ble-kinesis-advantage-custom-controller)**.
 
 
 ## Many thanks to
