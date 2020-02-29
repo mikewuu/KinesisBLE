@@ -300,13 +300,17 @@ void HID::sendKeys(
     }
   }
 
-  if (memcmp(&report, &oldReport, sizeof(report))) {        
-    if(usb_hid.ready()) {
-      usb_hid.sendReport(0, &report, sizeof(report));
-    } else {
-      bleHID.keyboardReport(&report);      
-    }
+  bool setReport = memcmp(&report, &oldReport, sizeof(report));
+  if(!setReport) {
+    return;
   }
+  
+  if(usb_hid.ready()) {
+    usb_hid.sendReport(0, &report, sizeof(report));
+    return;
+  }
+  
+  bleHID.keyboardReport(&report);      
 }
 
 bool HID::isUSB(void) {

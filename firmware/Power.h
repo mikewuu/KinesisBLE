@@ -11,8 +11,8 @@ class Power {
     
   private:
     const float MV_PER_LSB = 0.73242188F;
-    const float VBAT_DIVIDER = 0.71275837F;
-    const float VBAT_DIVIDER_COMP = 1.403F;
+    const float VBAT_DIVIDER = 0.5F;
+    const float VBAT_DIVIDER_COMP = 2.0F;
     const uint8_t VBAT_PIN = A6;
     const uint8_t USB_PIN = A7;
 
