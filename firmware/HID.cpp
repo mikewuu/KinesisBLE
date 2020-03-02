@@ -226,8 +226,8 @@ void HID::begin(void) {
   Bluefruit.setTxPower(0);
   Bluefruit.autoConnLed(false);
 
-  bleDIS.setManufacturer("BLE");
-  bleDIS.setModel("BLE");
+  bleDIS.setManufacturer("Bluetooth");
+  bleDIS.setModel("Bluetooth");
   
   bleDIS.begin();
   bleHID.begin();
