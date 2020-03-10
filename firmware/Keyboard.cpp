@@ -1,4 +1,5 @@
 #include "Keyboard.h"
+#include "config.h"
 
 Keyboard::Keyboard(void)
 : matrix(), keymap(), hid(), power(), restTimer() {
@@ -26,8 +27,9 @@ void Keyboard::update(void) {
   led.process();
 
   #if REST_TIMER
-  restCheck();
+    restCheck();
   #endif
+  
   
   sleepCheck();
 }
