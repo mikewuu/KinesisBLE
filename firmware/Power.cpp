@@ -22,7 +22,7 @@ int Power::VBATReading(void) {
   analogReference(AR_DEFAULT);
   analogReadResolution(10);
   
-  return raw;
+  return raw * MV_PER_LSB * VBAT_DIVIDER_COMP;
 }
 
 uint8_t Power::percentageFrom(float mvolts) {

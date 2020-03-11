@@ -217,6 +217,7 @@ uint8_t const desc_hid_report[] =
 {
   TUD_HID_REPORT_DESC_KEYBOARD(),
 };
+
 Adafruit_USBD_HID usb_hid;
 
 void HID::begin(void) {
@@ -225,8 +226,8 @@ void HID::begin(void) {
   Bluefruit.setTxPower(0);
   Bluefruit.autoConnLed(false);
 
-  bleDIS.setManufacturer("TODO");
-  bleDIS.setModel("TODO");
+  bleDIS.setManufacturer("Bluetooth");
+  bleDIS.setModel("Bluetooth");
   
   bleDIS.begin();
   bleHID.begin();
@@ -247,6 +248,8 @@ void HID::begin(void) {
   usb_hid.setPollInterval(2);
   usb_hid.setReportDescriptor(desc_hid_report, sizeof(desc_hid_report));
   usb_hid.begin(); 
+  USBDevice.setProductDescriptor("Kinesis BLEx");
+  USBDevice.setManufacturerDescriptor("USB");
 }
 
 void HID::sendKeys(
@@ -300,13 +303,17 @@ void HID::sendKeys(
     }
   }
 
-  if (memcmp(&report, &oldReport, sizeof(report))) {        
-    if(usb_hid.ready()) {
-      usb_hid.sendReport(0, &report, sizeof(report));
-    } else {
-      bleHID.keyboardReport(&report);      
-    }
+  bool setReport = memcmp(&report, &oldReport, sizeof(report));
+  if(!setReport) {
+    return;
   }
+  
+  if(usb_hid.ready()) {
+    usb_hid.sendReport(0, &report, sizeof(report));
+    return;
+  }
+  
+  bleHID.keyboardReport(&report);      
 }
 
 bool HID::isUSB(void) {
