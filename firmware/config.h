@@ -2,6 +2,6 @@
 #define CONFIG_H
 
 #define DEBUG 0
-#define REST_TIMER 1
+#define REST_TIMER 0
 
 #endif
