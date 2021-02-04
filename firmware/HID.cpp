@@ -222,7 +222,7 @@ Adafruit_USBD_HID usb_hid;
 
 void HID::begin(void) {
   Bluefruit.begin();
-  Bluefruit.setName("Kinesis BLEx");
+  Bluefruit.setName("Kinesis BLE Test");
   Bluefruit.setTxPower(0);
   Bluefruit.autoConnLed(false);
 
@@ -248,7 +248,7 @@ void HID::begin(void) {
   usb_hid.setPollInterval(2);
   usb_hid.setReportDescriptor(desc_hid_report, sizeof(desc_hid_report));
   usb_hid.begin(); 
-  USBDevice.setProductDescriptor("Kinesis BLEx");
+  USBDevice.setProductDescriptor("Kinesis BLE");
   USBDevice.setManufacturerDescriptor("USB");
 }
 
